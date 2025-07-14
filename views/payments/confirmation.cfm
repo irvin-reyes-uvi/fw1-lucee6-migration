@@ -201,25 +201,25 @@
 
                             <cftry>
                                 <cfset ccAuthorizationStruct = {}/>
-																<cfset isCCSystemv2 = true/>
+                                <cfset isCCSystemv2 = true/>
 
                                 <cfif isCCSystemv2>
-                                    <!--- use isCCSystemv2 to do CC transaction 
-                                    <cfset obj_CCSystemv2 = createObject('component', 'model.utils.CCSystemv2')/>
-
-                                    <cfif session.OPPaymentInfo.CCState is ''>
+                                    <!---
+                                        use isCCSystemv2 to do CC transaction
+                                        <cfset obj_CCSystemv2 = createObject('component', 'model.utils.CCSystemv2')/>
+                                        <cfif session.OPPaymentInfo.CCState is ''>
                                         <cfset dState = session.OPPaymentInfo.otherState/>
-                                    <cfelse>
+                                        <cfelse>
                                         <cfset dState = session.OPPaymentInfo.CCState/>
-                                    </cfif>--->
+                                        </cfif>
+                                    --->
 
-																		<cfscript>
-																				obj_CCSystemv2 = craeteObject('component', 'model.utils.CCSystem2')
-																				isCCStateNull = session.OPPaymentInfo.CCState is '';
+                                    <cfscript>
+                                    obj_CCSystemv2 = craeteObject('component', 'model.utils.CCSystem2')
+                                    isCCStateNull = session.OPPaymentInfo.CCState is '';
 
-																				dState = isCCStateNull ? session.OPPaymentInfo.otherState : session.OPPaymentInfo.CCState;
-												
-																		</cfscript>
+                                    dState = isCCStateNull ? session.OPPaymentInfo.otherState : session.OPPaymentInfo.CCState;
+                                    </cfscript>
 
                                     <cfif error_test_handler.isDoingTestNow()>
                                         <cflog
