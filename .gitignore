@@ -1,0 +1,29 @@
+# Ignore all .json files everywhere in the repository
+*.json
+
+# But allow specific .json files if needed (uncomment and edit as required)
+# !/path/to/important.json
+
+# Ignore .json files in upload directories (common patterns)
+upload/*.json
+uploads/*.json
+**/upload/*.json
+**/uploads/*.json
+
+# Ignore .json files in any nested upload-related folders
+**/upload/**/*.json
+**/uploads/**/*.json
+
+# If you want to ignore only .json files inside any "upload" folder, but NOT globally:
+# Uncomment the next two lines and comment out the global *.json above
+# upload/**/*.json
+# uploads/**/*.json
+
+# Ignore node_modules and common system files (robust defaults)
+node_modules/
+.DS_Store
+Thumbs.db
+
+# Ignore environment and config files
+.env
+.env.*

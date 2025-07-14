@@ -1,0 +1,332 @@
+/* HTML Elements */
+html{ padding-bottom:0px; margin-bottom:0px; }
+body{ background:#e6e2d7; padding-bottom:0px; margin-bottom:0px; color:#797266; }
+html>/**/body, x:-moz-any-link, x:default { position:relative; left:-0.1px; } /*Firefox Flash 1px horizontal fix */
+h2 a{ font-size:16px; }
+h2 a:hover{ text-decoration:underline; }
+h2, h2 a{ font-family:Arial, Helvetica, sans-serif; font-size:14px; margin:0 0 10px 0; text-decoration:none; }
+
+/* Resort Main Titles */
+h1#rstMainTitle {color:#3679a8;font-family:'HelveticaNeue47LightCondensed';font-size:22px;line-height:27px;font-weight:normal;margin:15px 0 0 0;padding:0; }
+h1#rstMainTitle span{color:#004362;font-size:46px;font-family:'HelveticaNeue35Thin';letter-spacing:-1px;}
+.rstTabTitle{background:url(../images-general/resorts-tab-arrow.gif) left 9px no-repeat;padding:13px 0 0 12px;margin:0 0 30px 12px;font-size:20px;color:#3679a8;font-family:'HelveticaNeue47LightCondensed';}
+
+
+
+/* Links */
+a{ text-decoration:underline; color:#3679a8; }
+a:hover{ text-decoration:underline; color:#66a4d0; }
+a.goBtn{ display:block; width:24px; height:24px; background:url(/images-index/btn_go.gif) 0px 0px no-repeat; }
+a.goBtn:hover{ background-position:0px -24px; }
+a.emailSub{ display:block; width:69px; height:22px; background:url(/images-index/email-sumbit.png) 0px 0px no-repeat;margin:5px 0 0 75px; }
+a.emailSub:hover{ background-position:0px -22px; }
+
+a.emailSub2{ width:69px; height:22px; background:url(/images-index/email-sumbit.png) 0px 0px no-repeat;margin:6px 0 0 0; }
+a.emailSub2:hover{ background-position:0px -22px; }
+
+
+/* Layout */
+#themeWrapper, #themeWrapper2{ margin-bottom:0px; padding-bottom:0px; }
+#contentWrapper{ width:926px; margin:0px auto; }
+#contentHeader{ padding:0px 8px; position:relative; z-index:1; }
+#headerShaddowL{ position:absolute; top:0px; left:-29px; }
+#headerShaddowR{ position:absolute; top:0px; right:-29px; }
+p #content{ padding:0 8px 30px 8px; background:url(/images-resorts/content-bg.png) top left repeat-y; }
+p #content2{ padding:0 8px 30px 8px; background:url(/images-resorts/content-bg2.png) top left repeat-y; }
+#leftCol{ width:190px; margin-top:-22px; padding:9px 6px 0 6px; float:left; display:inline; position:relative; z-index:2; }
+#leftColInner{ background:url(/images-ne/leftCol-innerbg.jpg) top left repeat-x; }
+#leftCol.subPage{ margin-top:-86px; }
+#mainCol, .mainCol{ width:683px; float:right; display:inline; padding:25px 5px 15px 0; }
+.fullMainCol{ float:right; display:inline; width:708px;padding-bottom:15px; }
+#innerColLeft{ float:left; display:inline; width:453px; padding-left:10px; }
+
+
+/*Footer Social Media Icons*/
+.socialIcons{background-image:url(../images-site/footer-social-media.gif);background-position:no-repeat;width:30px;height:30px;display:inline-block;*display:inline;zoom:1;vertical-align:top;}
+#footerSocialIcons{margin:35px 0 0 6px;}
+#footerSocialIcons li {list-style:none;float:left;margin:0 0 0 10px;}
+#footerSocialIcons li a.icFacebook{background-position:0px 0px;}
+#footerSocialIcons li a:hover.icFacebook{background-position:0px -30px;}
+#footerSocialIcons li a.icTwitter{background-position:-40px 0px;}
+#footerSocialIcons li a:hover.icTwitter{background-position:-40px -30px;}
+#footerSocialIcons li a.icGooglePlus{background-position:-80px 0px;}
+#footerSocialIcons li a:hover.icGooglePlus{background-position:-80px -30px;}
+#footerSocialIcons li a.icPinterest{background-position:-120px 0px;}
+#footerSocialIcons li a:hover.icPinterest{background-position:-120px -30px;}
+
+
+/* General Items */
+.bullets p, p.bullet{ padding-left:9px; margin:0px; }
+.bullets2 p, p.bullet2{ padding-left:9px; margin:3px 0; }
+.widget{ width:166px; margin:30px auto; }
+.widgetIndent{ padding:5px 5px 0 3px; }
+.dottedDivider{ background:url(/images-resorts/divider-horz-dotted.gif) top left repeat-x; height:1px; margin:0px; font-size:0%; line-height:0%; }
+.dottedDivider_vert{ background:url(/images-general/divider-vert.gif) top left repeat-y; width:1px; margin:0px; font-size:0%; line-height:0%; }
+.red{ color:#F00; }
+.blue{ color:#3679a8; }
+.bluePointer, .bluePointers p, .bullet{ background:url(/specials/images-hotsale/pointer-blue.gif) 0px 4px no-repeat; padding-left:10px; margin:3px 0px; }
+a#widget_planner{ display:block; width:179px; height:67px; background:url(/images-index/btn_planner.gif) 0px 0px no-repeat; }
+a#widget_planner:hover{ background-position:0px -69px; }
+a#widget_wallpaper{ display:block; width:177px; height:55px; background:url(/images-general/wdgt_Wallpapers.jpg) 0px 0px no-repeat; }
+a#widget_wallpaper:hover{ background-position:0px -55px; }
+
+#chefWin{ background:url(/images-site/chefWalterStaib.jpg) top right no-repeat #fff; border:solid 6px #c7c2b7; width:580px; height:600px; padding:40px 0 0 25px; position:relative; }
+
+/* Quick Quote */
+#qqResortWrapper, #qqWrapper{ float:right; display:inline; width:187px; margin-right:5px; position:relative; }
+#qqSpecials{ padding-left:8px; }
+#qqSpecials p{ padding-left:9px; margin:3px 0; }
+a#getQuoteBtn, a.getQuoteBtn{ display:block; width:104px; height:30px; background:url(/images-qq/qq-btnGetQuote.gif) top left no-repeat; float:right; }
+a#getQuoteBtn:hover, a.getQuoteBtn:hover{ background-position:0px -30px; }
+a#qqBookNowBtn, a.qqBookNowBtn{ display:block; width:104px; height:30px; background:url(/images-qq/qq-btnBookNow.gif) top left no-repeat; float:right; }
+a#qqBookNowBtn:hover, a.qqBookNowBtn:hover{ background-position:0px -30px; }
+a#bestPriceBtn{ display:block; background-position:0px 0px; background-repeat:no-repeat; width:54px; height:19px; float:left; display:inline; margin-top:5px; }
+a#bestPriceBtn:hover{ background-position:0px -19px; }
+a#alreadyBooked{ display:block; float:left; width:82px; margin:10px 0 0 8px; height:13px; background:url(../images-qq/txt-alreadyBooked.gif) 0px 0px no-repeat; }
+a#alreadyBooked:hover{ background-position:0px -15px; }
+a.qqCal{ display:block; width:25px; height:21px; background:url(/images-qq/qq-cal-btn.gif) 0px 0px no-repeat; }
+a.qqCal:hover{ background-position:0px -21px; }
+ul.blueList{ padding-left:20px; list-style-image:url(../../../images-activities/bullet-blue.gif); }
+ul.blueList li{ margin:3px 0; }
+ul.ukList{ list-style:none; padding:0 10px; }
+ul.ukList li.divider{ background:url(/images-qq/divider-UK.gif) top center no-repeat; height:2px; margin:0px; line-height:0%; font-size:0%; }
+ul.ukList li a { font-size:11px; display:block; padding:3px 0 3px 12px; text-decoration:none; color:#797266; background:url(/images-qq/uk-pointer.gif) 2px -29px no-repeat; }
+ul.ukList li a:hover{ background-position:2px 7px; color:#3679a8; background-color:#f5f5f5; }
+#bpWin{ background:url(/images-site/bestPriceSeal.jpg) top right no-repeat #fff; border:solid 6px #c7c2b7; width:585px; height:340px; padding:40px 0 0 25px; position:relative; }
+a#bestPriceClose{ position:absolute; top:-1px; right:-2px; width:27px; height:27px; background:url(/images-site/btn_close_gurantee.gif) 0px 0px no-repeat; }
+a#bestPriceClose:hover{ background-position:0px -29px; }
+
+
+/* Buttons */
+a.bookNow{ display:block; width:77px; height:15px; background:url(/images-resorts/btn_bookNow.gif) top left no-repeat; }
+a.bookNow:hover{ background-position:0px -20px; }
+a.viewRooms{ display:block; width:85px; height:15px; background:url(/images-resorts/btn_viewRooms.gif) top left no-repeat; }
+a.viewRooms:hover{ background-position:0px -20px; }
+a.viewDetails{ display:block; width:85px; height:15px; background:url(/images-resorts/btn_viewDetails.gif) top left no-repeat; }
+a.viewDetails:hover{ background-position:0px -20px; }
+a.learnMore{ display:block; width:82px; height:15px; background:url(/images-resorts/btn_learnMore3.gif) top left no-repeat; }
+a.learnMore:hover{ background-position:0px -20px; }
+a.viewPhotos{ display:block; width:85px; height:15px; background:url(/images-resorts/btn_viewPhotos.gif) top left no-repeat; }
+a.viewPhotos:hover{ background-position:0px -20px; }
+a.viewMenu{ display:block; width:85px; height:15px; background:url(/images-resorts/btn_viewMenu.gif) top left no-repeat; }
+a.viewMenu:hover{ background-position:0px -20px; }
+a.learnMoreHighlight{ background:0px 0px no-repeat; display:block; width:81px; height:11px; margin-top:10px; }
+a.learnMoreHighlight:hover{ background-position:0px -14px; }
+a.viewPhotosHighlight{ background:0px 0px no-repeat; display:block; width:81px; height:11px; margin-top:10px; }
+a.viewPhotosHighlight:hover{ background-position:0px -14px; }
+a.sandalsHomepage{ display:block; width:116px; height:15px; background:url(/images-general/btn_sandalshomepage.gif) top left no-repeat; }
+a.sandalsHomepage:hover{ background-position:0px -20px; }
+a.sandalsSitemap{ display:block; width:116px; height:15px; background:url(/images-general/btn_sandalssitemap.gif) top left no-repeat; }
+a.sandalsSitemap:hover{ background-position:0px -20px; }
+a.viewVRX{ display:block; width:89px; height:15px; background:url(/images-resorts/btn_viewVRX.gif) top left no-repeat; }
+a.viewVRX:hover{ background-position:0px -20px; }
+
+
+
+/* Side Nav */
+ul#sideNav { list-style:none; margin:0 0 30px 0; padding:15px 12px 0 12px; }
+ul#sideNav li { margin:0px; padding:0px; }
+ul#sideNav li.divider{ background:url(/images-resorts/divider-horz-dotted.gif) top left repeat-x; height:1px; margin:0px; line-height:0%; font-size:0%; }
+ul#sideNav li a { font-size:12px; display:block; padding:5px 0 5px 12px; text-decoration:none;  }
+ul#sideNav li a:hover, ul#sideNav li a.selected{ background-position:2px 9px; }
+ul#sideNav ul{ list-style:none; margin:0 0 0 15px; padding:0px; }
+ul#sideNav ul a{ display:inline; font-size:11px; }
+ul#sideNav ul a:hover{ background:none; }
+ul#sideNav ul li{ padding:2px 0px; }
+ul#sideNav ul li a{ padding:0px; background:none; }
+ul#sideNav ul li a:hover, ul#sideNav ul li a.selected{ background:none; }
+
+
+/* Javascript Gallery */
+#jsSlideShow{ width:910px; position:relative; height:380px; z-index:1;}
+#jsSlideShow img{ position:absolute; z-index:2; }
+#jsSlideShowControls{ position:absolute; z-index:9999; width:910px; height:380px; }
+a#jsSlideShowPrev{ display:block; width:50px; height:50px; background:url(/images-general/jsSlideShow_left.png); position:absolute; z-index:9999; top:150px; left:20px; }
+a#jsSlideShowNext{ display:block; width:50px; height:50px; background:url(/images-general/jsSlideShow_right.png); position:absolute; z-index:9999; top:150px; right:20px; }
+
+
+
+/* Footer */
+#phoneNumberLinks{ width:926px; margin:10px auto; text-align:center; }
+#phoneNumberLinks a{ color:#635544; font-size:9px; font-weight:bold; text-transform:uppercase; text-decoration:none; background:url(/images-site/footer-pointer.gif) 0px 1px no-repeat; padding:0 9px 0 11px; }
+#phoneNumberLinks a:hover{ color:#969182; }
+#phoneNumberLinks #footerLine{ margin:10px 0 3px 0; }
+
+#footerLogosWrapper{ position:relative; margin-bottom:0px; padding-bottom:0px; }
+#footerLogosBtn{ position:absolute; top:-1px; width:100%; line-height:1px; }
+#footerLogosBtn img{ vertical-align:top; }
+#footerLogos{ background:url(/images-site/footer-logos-bg.jpg) bottom center repeat-x; height:150px; padding-top:50px; text-align:center; }
+a#closeFooterFamilyBtn, a#openFooterFamilyBtn{ display:block; background:url(/images-site/footer-closeFamilyBtn.png) top left no-repeat; width:206px; height:33px; margin:0px auto; }
+a#openFooterFamilyBtn{ background-image:url(/images-site/footer-openFamilyBtn.png); }
+a#closeFooterFamilyBtn:hover, a#openFooterFamilyBtn:hover{ background-position:0px -33px; }
+a.calContinue{ display:block; width:88px; height:28px; background:url(/images-general/redlane_btn_continue.gif) 0px 0px no-repeat; }
+a.calContinue:hover{ background-position:0px -28px; }
+
+#footerNav{ width:896px; margin:30px auto 5px auto; padding-left:30px; }
+.footerDivider{ width:1px; font-size:0%; line-height:0%; height:150px; background:#cecabd; float:left; display:inline; margin:0 30px 0 15px; }
+#footerNav ul{ margin:0px; padding:0px; list-style-type:none; float:left; display:inline; width:130px; }
+#footerNav ul li{ line-height:18px; color:#797266; }
+#footerNav ul li a{ color:#797266; text-decoration:none; }
+#footerNav ul li a:hover{ text-decoration:underline; color:#5f594f; }
+#footerNav ul li:first-child{ font-family:Arial, Helvetica, sans-serif; font-size:15px; font-weight:bold; color:#635544;}
+
+#ukLogos a{ background:none; }
+#ukLogos img{ float:left; display:inline; margin:15px 15px 15px 170px; }
+#ukLogos p{ float:left; display:inline; width:365px; font-size:10px; text-align:left; padding-top:15px; }
+
+/* Common Elements */
+a.viewLM_resorts{ display:block; background:url(../specials/images-travel/btn_viewResorts.gif) 0px 0px no-repeat; width:190px; height:30px; margin:0 0 0 80px; }
+a.viewLM_resorts:hover{ background-position:0px -29px; }
+.wideDivider{ background:url(/images-resorts/divider-horz-dotted2.gif) top left repeat-x; height:8px; font-size:0%; line-height:0%; margin:10px 0px; }
+.divider-dotted{ display:block; height:1px; font-size:0%; line-height:0%; background:url(/images-planner/divider-dotted-horz.gif) top left repeat-x; margin:8px 0px; }
+.largerFont{ font-size:12px; line-height:18px; }
+.largerFont a{ text-decoration:underline; }
+
+p.blueArrow, div.blueArrows p, ul.blueArrows, a.blueArrow{ margin:2px 0px; padding-left:10px; background:url(/images-planner/bullet_blue.gif) 0px 3px no-repeat; }
+p.blueArrow a{ color:#3679a8; text-decoration:underline; }
+p.blueArrow a:hover{ color:#1e4c6c; }
+
+#resortOptions{ padding-top:30px; float:right; display:inline; width:218px; }
+#resortOptions a, a.option, a.optionBlock{ display:block; height:24px; background-position:0px 0px; background-repeat:no-repeat; float:left; display:inline; }
+#resortOptions a:hover, a.option:hover, a.optionBlock:hover{ background-position:0px -24px; }
+a.optionBlock{ float:none; display:block; }
+#optionVideo{ width:93px; background-image:url(/images-ne/option_01.gif); margin:0 5px 5px 0; }
+#optionCompare{ width:120px; background-image:url(/images-ne/option_02.gif); margin-bottom:5px;  }
+#optionPhotos{ width:93px; background-image:url(/images-ne/option_03.gif); margin-right:5px; }
+#optionPlanner{ width:120px; background-image:url(/images-ne/option_04.gif); }
+#optionAccommodations{ width:173px; background-image:url(/images-ne/option_05.gif); }
+#optionActivities{ width:149px; background-image:url(/images-ne/option_06.gif); }
+#optionDining{ width:134px; background-image:url(/images-ne/option_07.gif); }
+#optionTours{ width:133px; background-image:url(/images-ne/option_08.gif); }
+#optionSpaPhotos{ width:122px; background-image:url(/images-ne/option_09.gif); }
+#optionSpaTreatments{ width:213px; background-image:url(/images-ne/option_10.gif); }
+#optionMoreSpecials{ width:158px; background-image:url(/images-ne/option_11.gif); }
+#optionButlerRooms{ width:198px; background-image:url(/images-ne/option_12.gif); }
+#optionMap{ width:111px; background-image:url(/images-ne/option_13.gif); }
+#optionAccBack{ width:164px; background-image:url(/images-ne/option_14.gif); }
+#optionMap_small{ width:79px; background-image:url(/images-ne/option_15.gif); }
+#optionVideo_small{ width:85px; background-image:url(/images-ne/option_16.gif); }
+#optionAddToFavorites{ width:115px; background-image:url(/images-ne/option_17.gif); }
+#optionVRX, .optionVRX{ width:122px; background-image:url(/images-ne/option_18.gif); }
+#optionGolfPhotos{ width:153px; background-image:url(/images-ne/option_19.gif); }
+#optionLearnMore{ width:93px; background-image:url(/images-ne/option_20.gif); }
+#optionConciergeRooms{ width:203px; background-image:url(/images-ne/option_21.gif); }
+
+/* Bahamas - Emerald Bay Golf */
+#viewgalleryba2 { background:url(../../../images-golf/gallery-bg-bahamas.jpg) top left no-repeat; width:350px; height:157px;  margin-bottom:13px;  }
+#teeboxa2 { background:url(../../../images-golf/ba-teebox1.jpg) top left no-repeat; width:351px; height:104px; display:block;  }
+#teeboxb2 { background:url(../../../images-golf/ba-teebox2.jpg) top left no-repeat; width:351px; height:166px; display:block;  }
+#passionateGolfers2 { background:url(../../../images-golf/passionate-golfers.jpg) top left no-repeat; display:block; width:314px; height:248px; margin-top:40px; }
+a.booknow2 { background-image:url(../../../images-golf/booknow-bahamas.gif);  display:block; width:72px; height:15px;  }
+a.booknow2:hover { background-image:url(../../../images-golf/booknow-bahamas.gif); background-position: 0px -15px; display:block; width:72px; height:15px;  }
+.greenb2 p, p.greenb2 { background-color: transparent; background-image: url("../../../images-golf/green-bullet.gif"); background-repeat: no-repeat; background-attachment: scroll; background-position: 0px 5px; padding-left: 12px; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px; }
+a.booknow2 { background-image: url("../../../images-golf/booknow-bahamas.gif"); display: block; width: 72px; height: 15px; }
+a.booknow2:hover { background-image: url("../../../images-golf/booknow-bahamas.gif"); background-position: 0px -15px; display: block; width: 72px; height: 15px; }
+div > p:first-child, div > h3:first-child { margin-top:0px; }
+
+
+#pricing_window{ background:url(/images-resorts/pricing-bg.png) top left no-repeat; width:239px; height:290px; position:absolute; display:none; z-index:30; padding:35px 15px 0 20px; }
+a.pricingBookNow{ display:block; background:url(/images-resorts/pricing-getQuote.gif) 0px 0px no-repeat; width:87px; height:25px; margin:5px 0 0 70px; }
+a.pricingBookNow:hover{ background-position:0px -28px; }
+
+
+/*  Accommmodation Popups  */
+
+
+.quickTip{ position:relative; cursor:pointer; }
+.quickTipWindow{
+	background:url(../images-resorts/popupBox.png) top left no-repeat;
+	width:290px;
+	height:135px;
+	position:absolute;
+	z-index:999;
+	display:none;
+}
+.quickTipWindow h1{ font-weight:bold; font-size:12px; padding:20px 0 0 35px; }
+.quickTipWindow p{ font-size:11px; color:#7c756a; width:240px; margin-top:10px; margin-left:35px; }
+
+
+
+/*wedding I DO css.*/
+
+#contestRules{ width:260px; height:160px; font-size:12px}
+.contestRulesBtn{ background:url(../Ido/images/booking_rules_btn.gif) top left no-repeat; width:257px; height:30px;}
+.contestRulesBtn:hover{ background-position:0px -36px; cursor:pointer;}
+
+#prom_List{ background:url(../Ido/images/dotDiv_ul.gif) top left no-repeat; width:360px; height:140px; margin-left:30px;}
+#prom_List ul{list-style-image:url(../Ido/images/bullet_ul.gif);}
+#prom_List ul li{ padding-bottom:7px;}
+
+#personal_info{ background:url(../Ido/images/bg_1.png) top left no-repeat; width:590px; height:315px;}
+#personal_info ul{ list-style:none;}
+#personal_info ul.labels li{height:40px;}
+#personal_info ul.inputs li{height:40px;}
+#personal_info ul input{ width:140px; margin-bottom:15px;}
+#personal_info ul select{ width:140px; margin-bottom:15px;}
+
+#optional_info{}
+#optional_info_uShado{ background:url(../Ido/images/upperShado.png) top left no-repeat; width:600px; min-height:20px; padding-top:2px;}
+#optional_info_lShado{ background:url(../Ido/images/lowerShado.png) bottom left no-repeat; width:599px; min-height:10px;}
+#optional_info_container{ background:url(../Ido/images/content_bg.png) top left repeat-y; width:558px; min-height:100px;  background-position:-13px 0px; padding-left:30px;}
+#nextVacQ{ margin-top:20px;}
+#nextVacQ p{ margin:0px;}
+#nextVacQ ul{ list-style:none; margin:0px;}
+#nextVacQ ul li{ margin-top:5px;}
+#nextVacQ ul.row1{ width:135px; padding:0px; margin-top:0px;}
+#nextVacQ ul.row2{ width:175px; padding:0px; margin-top:0px;}
+#nextVacQ ul.row3{ width:100px; padding:0px; margin-top:0px;}
+#nextVacQ2{ margin-top:20px;}
+#nextVacQ2 ul{ list-style:none; margin:0px; width:100px;}
+#nextVacQ2 ul li{ margin-top:5px;}
+#nextVacQ2 ul.col1{ width:100px; padding:0px; margin-top:0px;}
+#nextVacQ2 ul.col2{ width:100px; padding:0px; margin-top:0px;}
+#nextVacQ2 ul.col3{ width:100px; padding:0px; margin-top:0px;}
+#nextVacQ3{ margin-top:20px;}
+#nextVacQ3 ul{width:380px; list-style:none; padding:0px; margin-top:0px;}
+#nextVacQ3 ul li{ width:120px; float:left;}
+#nextVacQ4 ul{list-style:none; padding:0px; margin-top:0px;}
+#nextVacQ4{ margin-top:20px;}
+#nextVacQ5{ margin-top:20px;}
+#nextVacQ5 ul{ list-style:none; padding:0px;}
+#nextVacQ5 ul li{ margin-left:20px;}
+#nextVacQ6{ margin-top:20px;}
+#nextVacQ6 ul li{ margin-left:10px;}
+#nextVacQ6 ul{ padding:0px; list-style:none;}
+#nextVacQ7{ margin-top:20px;}
+#nextVacQ7 ul li{ margin-left:10px;}
+#nextVacQ7 ul{ padding:0px; list-style:none;}
+#nextVacQ8{ margin-top:20px;}
+#nextVacQ8 ul li{ margin-left:10px;}
+#nextVacQ8 ul{ padding:0px; list-style:none; width:150px;}
+
+#form_disclaimer{ margin-top:30px; width:555px; margin-left:30px;}
+#disclaimer_List{list-style-image:url(../Ido/images/bullet_ul.gif)}
+#disclaimer_List li{ margin-top:5px;}
+
+#submitBtn{ background: url(../Ido/images/sbmt_btn.jpg) top left no-repeat; width:100px; height:35px;}
+#submitBtn:hover{ background-position:0 -46px; cursor:pointer;}
+
+
+/* Specials fly free v.5*/
+
+/*#topPromos{ background:url(../images-general/topBg.jpg) top left no-repeat; width:640px; height:245px; margin-top:20px; margin-left:30px;}
+#cff{ background:url(../images-general/med_box_specials_v-5.gif) top left no-repeat; width:363px; height:195px; margin-top:70px; padding-left:25px; padding-top:32px;}
+#cff p{ width:310px; line-height:20px; font-size:12px; margin-top:2px;}
+.bookONline-v5{ font-weight:bold; text-decoration:underline; color:#3679a8}
+#rightOffers{ background:url(../images-general/redBox.png) top left no-repeat; width:247px; height:78px; margin-top:70px;}
+.offerBoxv5{ background:url(../images-general/offrBox_v-5.jpg) top left no-repeat; width:573px; height:60px; margin-top:50px; margin-left:30px;}
+.offerInfo{ background:url(../images-general/offerINfoCont_v5.jpg) top left no-repeat; width:613px; height:131px; margin-left:50px;}
+*/
+
+
+/* UK Win A HOliday Widget*/
+#winHolidayWidget{ background:url(/images-uk/winHoliday-widgetBg.png) 0 0 no-repeat; width:192px; height:152px; padding-top:187px; margin:15px auto; }
+#winHolidayWidgetForm input{ vertical-align:top; padding:3px; width:111px; color:#666; margin-left:8px; }
+#winHolidayWidgetForm a{ display:inline-block; *display:block; zoom:1; background:url(../images-uk/winHoliday-submit2.gif) 0 0 no-repeat; width:52px; height:24px; vertical-align:top; }
+#winHolidayWidgetForm a:hover{ background-position:0px -24px; }
+#winHolidayWidgetForm a:active{ background-position:0px -48px; }
+
+.inlineBlock{ display:inline-block; *display:inline; zoom:1 }
+
+
+

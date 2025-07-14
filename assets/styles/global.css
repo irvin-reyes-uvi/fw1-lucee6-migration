@@ -1,0 +1,106 @@
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary, time, mark, audio, video, a img { margin: 0; padding: 0; border: 0; outline: 0; }
+img{ line-height:0px; vertical-align:top; }
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display: block; }
+table { border-collapse: collapse; border-spacing: 0; }
+sup, sub { height: 0; line-height: 1em; vertical-align:middle; _vertical-align:bottom; position:relative; font-size:.6em; }
+sup { bottom:.4em; }
+sub { top: .5ex; }
+h1,h2,h3,h4,strong{ font-weight:bold; }
+section > p:first-child,
+div > p:first-child,
+div > h1:first-child,
+div > h2:first-child,
+div > h3:first-child { margin-top:0px; }
+body {
+	padding:0px;
+	margin:0px;
+	background-color: #F5F5F5;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	line-height: 15px;
+	color: #555555;
+	padding-bottom:50px;
+	height:100%;
+	max-height:100%;
+}
+a{ color: #336699; text-decoration:none; outline:none; }
+a:hover { color: #CC6666; text-decoration: none; }
+a.underline{ text-decoration:underline; }
+textarea, input, select{ font-size:11px; font-family:Arial, Helvetica, sans-serif; padding:1px; height:auto; }
+label{ display:inline-block; *display:inline; zoom:1; width:90px; padding:0 15px 0 5px; vertical-align:middle; }
+label.inline{ padding:0px; }
+p{ margin:10px 0; }
+em{ font-style:italic; }
+small{ font-size:9px; line-height:14px; }
+
+
+
+.inlineBlock{ display:inline-block; *display:inline; zoom:1; vertical-align:top; }
+.floatLeft{ float:left; display:inline; }
+.floatRight{ float:right; display:inline; }
+.clearer { clear:both; display:block; margin:0; padding:0px; height:0px; line-height:1px; font-size:0%; }
+.rounded{	-moz-border-radius: 5px;
+			-webkit-border-radius: 5px;
+			border-radius: 5px; }
+.shadow{	-moz-box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.4);
+			-webkit-box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.4);
+			box-shadow: 0 0px 4px rgba(0, 0, 0, 0.4); }
+div > p:first-child, div > h3:first-child { margin-top:0px; }
+.disclaimer{ font-size:10px; line-height:14px; }
+
+
+
+#cobrandBar{ background:url(/assets/images/cobrand-bg.png) top center repeat-x; height:40px; margin-bottom:-7px; position:fixed; top:0px; left:0px; right:0px; z-index:999; font-weight:bold; color:#797266; }
+#cobrandBar img{ float:left; display:inline; }
+#cobrandBar p{ margin:0px; float:left; display:inline; padding:6px 22px 0 0; }
+#cobrandBar p span, #cobrandBar p a{ color:#635544; }
+#cobrandBar p a{ text-decoration:none; }
+#cobrandBar p a:hover{ text-decoration:underline; }
+
+.cardType{background:url("/assets/images/left_creditcards.gif") no-repeat 3px 2px;width: 38px; height: 25px;display:none;}
+.placeholder{color:#777777}
+
+.marginT20 {
+	margin-top:20px;
+}
+
+
+.cardTypePos {
+	position:absolute;
+}
+
+.stWidth150 {
+	width:150px;
+}
+
+.stWidth145 {
+	width:145px;
+}
+
+.countryHolder { 
+	width:200px;font-size:11px;
+}
+
+.headerMessageTop {
+	margin-bottom:20px;padding-left:0;
+}
+
+.resortBrand {
+ 	padding-left:2px;
+}
+
+.selectResort {
+	width:260px;
+}
+
+.checkinDate{
+	width:60px;
+}
+
+.heightCell {
+	height: 16px;
+}
+
+.size18 {
+	size: 18px;
+}
