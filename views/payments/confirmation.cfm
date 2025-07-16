@@ -1,43 +1,30 @@
 <cf_expire_page>
 
-<!--- CREATE AN OBJECT TO DETERMINE IF WE ARE IN DEV OR PRODUCTRION --->
-<cfset error_test_handler = createObject('component', 'model.utils.ErrorNTestHandler').initurl(url)/>
+<cfscript>
 
-<cfset isCCShift4Now = application.isDev/>
+error_test_handler = new model.utils.ErrorNTestHandler().initurl(url);
 
-<!--- <cfset isCCShift4Now = true/> --->
+isCCShift4Now = application.isDev;
 
-<cfset isTest = false/>
-<cfset inetOBJ = createObject('java', 'java.net.InetAddress')>
-<cfif findNoCase('test', cgi.http_host) OR findNoCase('local', cgi.http_host) OR findNoCase('127', cgi.http_host)>
-    <cfset isTest = true/>
-</cfif>
+isTest = application.isDev;
 
-<cfset inetOBJ = inetOBJ.getLocalHost()>
-<cfset LocalHostName = inetOBJ.getHostName()>
+inetOBJ = createObject('java', 'java.net.InetAddress');
+inetOBJ = inetOBJ.getLocalHost();
+LocalHostName = inetOBJ.getHostName();
 
-<!--- payment webservice url --->
-<cfset PaymentWSDL = 'http://remote.sandals.com/options/payment.cfc?wsdl'>
+v_new_token_string = '';
+v_new_response_code = '';
+v_new_shift4_error = '';
+v_cc_transaction_id = '';
+v_processor = '';
+v_new_shift4_error_message = '';
+prcDatasource = 'prcgold';
 
-<cfset v_new_token_string = ''>
-<cfset v_new_response_code = ''>
-<cfset v_new_shift4_error = ''>
-<cfset v_cc_transaction_id = ''>
-<cfset v_processor = ''>
-<cfset v_new_shift4_error_message = ''>
-<cfset prcDatasource = 'prcgold'>
+emailsNotifications = 'weddinggroups@uvltd.com,socialgroups@uvltd.com,incentivegroups@uvltd.com,anneth.zavala@sanservices.hn';
 
-<!--- Emails for Notifications Groups --->
-<cfset emailsNotifications = 'weddinggroups@uvltd.com,socialgroups@uvltd.com,incentivegroups@uvltd.com,anneth.zavala@sanservices.hn'>
+tmpDatasource = isTest ? 'webgold' : 'webgold_production';
+</cfscript>
 
-<cfif !findNoCase('dev', cgi.http_host)>
-    <cfset tmpDatasource = 'webgold'>
-    <cfelse>
-    <cfset tmpDatasource = 'webgold_production'>
-</cfif>
-<cfif findNoCase('dev', cgi.HTTP_HOST) OR findNoCase('local', cgi.http_host) OR findNoCase('127', cgi.http_host)>
-    <cfset PaymentWSDL = 'http://tieradevremote.sandals.com/options/payment.cfc?wsdl'>
-</cfif>
 
 <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#f5f5f5" border="0" id="pageholder" align="center">
     <tr>
@@ -133,22 +120,18 @@
 
                                 <!--- Set the expiration date. --->
                                 <cfif not isDefined('session.OPPaymentInfo.month')>
-                                    <cfdump var="session.OPPaymentInfo" label="session.OPPaymentInfo" abort="true">
+                                    <cfdump var="session.OPPaymentInfo" label="inside month validation" abort="true">
                                     <cflocation url=#buildUrl("main.default")# addtoken="no"/>
                                 </cfif>
-                                <cfset exp_date = '#session.OPPaymentInfo.month#' & '/01/' & '#session.OPPaymentInfo.year#'>
-
-                                <cfscript>
-                                NewInvoiceID = rc.NewInvoiceID;
-                                </cfscript>
+                                
 
                                 <cfset DAYPART = dateFormat(now(), 'DDMMYY')>
-                                <cfset INVOICE = DAYPART & NewInvoiceID>
+                                <cfset INVOICE = DAYPART & rc.NewInvoiceID>
                                 <cfif error_test_handler.isDoingTestNow()>
                                     <cflog
                                         type="information"
                                         file="OnlinePaymentLogByTest"
-                                        text="booking='#form.sandalsbookingnumber#'  Info='Called obe_pack.get_invoice_id, NewInvoiceID:#NewInvoiceID#--INVOICE:#INVOICE#' CardNumber='#session.OPPaymentInfo.CreditCard#' amount='#form.paymentamount#'"
+                                        text="booking='#form.sandalsbookingnumber#'  Info='Called obe_pack.get_invoice_id, NewInvoiceID:#rc.NewInvoiceID#--INVOICE:#INVOICE#' CardNumber='#session.OPPaymentInfo.CreditCard#' amount='#form.paymentamount#'"
                                     />
                                 </cfif>
 
@@ -164,12 +147,13 @@
                             </cftry>
 
                             <cftry>
-                                
                                 <cfif not isDefined('form.sandalsbookingnumber')>
                                     <cfset form.sandalsbookingnumber = 0>
                                 </cfif>
-
-                                <cfset isBookingDetailsEmpty = (rc.qryAssignment.getBookingNumber() IS '0') OR (rc.qryAssignment.getReservationNumber() IS '0')>
+                                
+                                <cfset isBookingDetailsEmpty = (rc.qryAssignment.getBookingNumber() IS '0') OR (
+                                    rc.qryAssignment.getReservationNumber() IS '0'
+                                )>
                                 <cfif isBookingDetailsEmpty>
                                     <cfif error_test_handler.isDoingTestNow()>
                                         <cflog
@@ -193,20 +177,11 @@
                             </cftry>
 
                             <cftry>
-                                <cfset ccAuthorizationStruct = {}/>
+                                
                                 <cfset isCCSystemv2 = true/>
 
                                 <cfif isCCSystemv2>
-
-                                    <cfset obj_shift4Factory = createObject('component', 'model.utils.Shift4Factory')/>
-                                    <cfset qry_cctypes = obj_shift4Factory.getCCTypes()/>
-
-                                    <cfscript>
-                                    obj_CCSystemv2 = createObject('component', 'model.utils.CCSystemv2')
-                                    isCCStateNull = session.OPPaymentInfo.CCState is '';
-
-                                    dState = isCCStateNull ? session.OPPaymentInfo.otherState : session.OPPaymentInfo.CCState;
-                                    </cfscript>
+                                    <cfset ccAuthorizationStruct = {}/>
 
                                     <cfif error_test_handler.isDoingTestNow()>
                                         <cflog
@@ -215,28 +190,8 @@
                                             text="cc_transaction='CCSystemV2'  isCCSystemv2='#isCCSystemv2#' booking='#form.sandalsbookingnumber#'  Info='Real CC, Call WS processTransaction' CardNumber='#session.OPPaymentInfo.CreditCard#' amount='#form.paymentamount#'"
                                         />
                                     </cfif>
-
-                                    <cfset cc_type_code = obj_shift4Factory.getCCCodeById(
-                                        session.OPPaymentInfo.CardType,
-                                        qry_cctypes
-                                    )/>
-                                    <cfset ccAuthorizationStruct = obj_CCSystemv2.doCCTransaction(
-                                        p_amount = form.paymentAmount,
-                                        p_cardtype = cc_type_code,
-                                        p_CardNumber = session.OPPaymentInfo.CreditCard,
-                                        p_Cvv2Cod = session.OPPaymentInfo.cvv2Code,
-                                        p_ExpirationMonth = dateFormat(exp_date, 'MM'),
-                                        p_ExpirationYear = dateFormat(exp_date, 'yyyy'),
-                                        p_CardholderName = '#session.OPPaymentInfo.CCFirstName# #session.OPPaymentInfo.CCLastName#',
-                                        p_streetaddress = session.OPPaymentInfo.CCAddress,
-                                        p_city = session.OPPaymentInfo.CCCity,
-                                        p_state = dState,
-                                        p_zipcode = session.OPPaymentInfo.CCZipCode,
-                                        p_isOnDev = isTest,
-                                        p_bookingNumber = form.sandalsbookingnumber,
-                                        p_country = session.OPPaymentInfo.CCCountry,
-                                        p_checkInDate = Form.CheckInDt
-                                    )/>
+                                    
+                                   <cfset ccAuthorizationStruct = rc.authorizationData>
                                 </cfif>
                                 <cfcatch type="any">
                                     <cfscript>
@@ -466,10 +421,7 @@
                                 <cfif structCardInfo.Approved>
                                     <cfset CCType = ''>
 
-                                    <cfset CCType = obj_shift4Factory.getCCCode4DBById(
-                                        session.OPPaymentInfo.CardType,
-                                        qry_cctypes
-                                    )/>
+                                    <cfset CCType = rc.ccType/>
 
                                     <cfif error_test_handler.isDoingTestNow()>
                                         <cflog
@@ -478,7 +430,7 @@
                                             text="booking='#form.sandalsbookingnumber#'  Info='Call INSERT_CREDIT_CARD' CardNumber='#session.OPPaymentInfo.CreditCard#' amount='#form.paymentamount#'"
                                         />
                                     </cfif>
-
+                                    <cfset exp_date = '#session.OPPaymentInfo.month#' & '/01/' & '#session.OPPaymentInfo.year#'>
                                     <cfstoredproc PROCEDURE="INSERT_CREDIT_CARD_LUCEE" DATASOURCE="#tmpDatasource#">
                                         <cfprocparam TYPE="IN" CFSQLTYPE="CF_SQL_VARCHAR" VALUE="#ccType#">
                                         <cfprocparam
@@ -702,7 +654,7 @@
                                                     text="booking='#form.sandalsbookingnumber#'  Info='Sending email to #sendToEmail#, bcc to #bccfield#' CardNumber='#session.OPPaymentInfo.CreditCard#' amount='#form.paymentamount#'"
                                                 />
                                             </cfif>
-
+                                           
                                             <cfmail
                                                 from="#FromEmail#"
                                                 to="#sendToEmail#"
@@ -735,9 +687,7 @@
                                                 <div
                                                     style="font-family: Arial, sans-serif; margin: 0; padding: 20px; color: 333; background-color: white; border-radius: 5px;"
                                                 >
-                                                    <h1
-                                                        style="font-size: 24px; margin-bottom: 20px; text-decoration:underline; "
-                                                    >Groups Online Payment Notification Email</h1>
+                                                    <h1 style="font-size: 24px; margin-bottom: 20px; text-decoration:underline;">Groups Online Payment Notification Email</h1>
                                                     <p style="font-size: 16px; gap:1em;">
                                                         <strong>Group Name:</strong> #Form.GroupName#<br>
                                                         <strong>Booking Number:</strong> #form.bookingnumber#<br>

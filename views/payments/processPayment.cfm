@@ -161,6 +161,7 @@
     }
 
 
+    /*
     future = runAsync(() => 
                     queryExecute(
                                  "SELECT a.RESORT_ID, a.CATEGORY_CODE, a.CATEGORY_NAME, a.DESCRIPTION
@@ -176,19 +177,19 @@
                                 { datasource: "SANDALSWEB" }
                                 )
     );
-    qryRoomCategoryInfo = future.get();
+    qryRoomCategoryInfo = future.get(); */
 </cfscript>
 
 
 <cfoutput>
                                         
-
+                                        <!---
                                         <cfif qryRoomCategoryInfo.recordcount gt 0>
                                             <cfset v_room_desc = qryRoomCategoryInfo.CATEGORY_NAME/>
-                                        </cfif>
+                                        </cfif> --->
 
                                         <br>
-                                        <table align="center" width="500">
+<table align="center" width="500">
                                             <tr>
                                                 <td>
                                                     <cfif ContinueDisplay>
@@ -201,7 +202,7 @@
                                                     </div>
                                                 </td>
                                             </tr>
-                                        </table>
+</table>
 
                         			
                                         <cfscript>
