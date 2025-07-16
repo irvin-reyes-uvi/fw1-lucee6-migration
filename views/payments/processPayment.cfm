@@ -232,6 +232,7 @@
                                                 month: Form.Month,
                                                 year: Form.year
                                             };
+                                            //writeDump(var=session.OPPaymentInfo, label="session.OPPaymentInfo", abort=true);
                                         </cfscript>
 
 
@@ -277,12 +278,12 @@
                                                                     <tr bgcolor="FFFFFF">
                                                                         <td  class="tablecell heightCell">Resort:</td>
                                                                         <td  class="highlight heightCell">
-                                                                            <cfloop query="Resorts">
-                                                                                <cfif Resorts.rst_code IS "#Form.ResortCode#">
-                                                                                    #Resort_Name#
-                                                                                    <cfbreak>
-                                                                                </cfif>
-                                                                            </cfloop>
+                                                                            <cfloop array="#rc.Resorts#" index="Resort">
+                                                                            <cfif Resort.code IS "#structBookingInfo.BookingInfo.resort#">
+                                                                                #Resort.name#
+                                                                                <cfbreak>
+                                                                            </cfif>
+                                                                        </cfloop>
                                                                       </td>
                                                                     </tr>
                                                                     <tr>

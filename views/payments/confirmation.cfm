@@ -2,12 +2,7 @@
 
 <!--- CREATE AN OBJECT TO DETERMINE IF WE ARE IN DEV OR PRODUCTRION --->
 <cfset error_test_handler = createObject('component', 'model.utils.ErrorNTestHandler').initurl(url)/>
-<cfset obj_shift4Factory = createObject('component', 'model.utils.Shift4Factory')/>
-<cfset qry_cctypes = obj_shift4Factory.getCCTypes()/>
-<cfset obj_shift4 = obj_shift4Factory.getShift4Processor(
-    p_isOnDev = error_test_handler.isDoingTestNow(),
-    p_app_name = 'GOP'
-)/>
+
 <cfset isCCShift4Now = application.isDev/>
 
 <!--- <cfset isCCShift4Now = true/> --->
@@ -138,6 +133,7 @@
 
                                 <!--- Set the expiration date. --->
                                 <cfif not isDefined('session.OPPaymentInfo.month')>
+                                    <cfdump var="session.OPPaymentInfo" label="session.OPPaymentInfo" abort="true">
                                     <cflocation url=#buildUrl("main.default")# addtoken="no"/>
                                 </cfif>
                                 <cfset exp_date = '#session.OPPaymentInfo.month#' & '/01/' & '#session.OPPaymentInfo.year#'>
@@ -168,16 +164,13 @@
                             </cftry>
 
                             <cftry>
-                                <!--- <cfdump var="#tmpDatasource#" abort="true"> --->
+                                
                                 <cfif not isDefined('form.sandalsbookingnumber')>
                                     <cfset form.sandalsbookingnumber = 0>
                                 </cfif>
 
-                                <cfscript>
-                                qryAssignment = rc.qryAssignment;
-                                </cfscript>
-
-                                <cfif (qryAssignment.recordcount eq 0)>
+                                <cfset isBookingDetailsEmpty = (rc.qryAssignment.getBookingNumber() IS '0') OR (rc.qryAssignment.getReservationNumber() IS '0')>
+                                <cfif isBookingDetailsEmpty>
                                     <cfif error_test_handler.isDoingTestNow()>
                                         <cflog
                                             type="information"
@@ -204,18 +197,12 @@
                                 <cfset isCCSystemv2 = true/>
 
                                 <cfif isCCSystemv2>
-                                    <!---
-                                        use isCCSystemv2 to do CC transaction
-                                        <cfset obj_CCSystemv2 = createObject('component', 'model.utils.CCSystemv2')/>
-                                        <cfif session.OPPaymentInfo.CCState is ''>
-                                        <cfset dState = session.OPPaymentInfo.otherState/>
-                                        <cfelse>
-                                        <cfset dState = session.OPPaymentInfo.CCState/>
-                                        </cfif>
-                                    --->
+
+                                    <cfset obj_shift4Factory = createObject('component', 'model.utils.Shift4Factory')/>
+                                    <cfset qry_cctypes = obj_shift4Factory.getCCTypes()/>
 
                                     <cfscript>
-                                    obj_CCSystemv2 = craeteObject('component', 'model.utils.CCSystem2')
+                                    obj_CCSystemv2 = createObject('component', 'model.utils.CCSystemv2')
                                     isCCStateNull = session.OPPaymentInfo.CCState is '';
 
                                     dState = isCCStateNull ? session.OPPaymentInfo.otherState : session.OPPaymentInfo.CCState;

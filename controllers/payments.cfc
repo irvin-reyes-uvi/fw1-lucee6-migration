@@ -66,8 +66,10 @@ component accessors="true" {
         rc.Resorts = viewData.Resorts;
         rc.Countries = viewData.Countries;
         
-        rc.NewInvoiceID = InvoiceService.getNewInvoiceId();
+        rc.NewInvoiceID = InvoiceService.getNewInvoiceId().getNewInvoiceNumber();
         rc.qryAssignment = BookingService.getBookingDetails(rc.SandalsBookingNumber);
+        //writeDump(var=rc.qryAssignment, label="qryAssignment");
+        //writeDump(var=rc.NewInvoiceID, label="NewInvoiceID", abort=true);
     }
 
     function processPayment( rc) {

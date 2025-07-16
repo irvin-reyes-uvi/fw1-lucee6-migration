@@ -1,8 +1,11 @@
 component accessors="true"{
-    property InvoiceQueryHandler;
+    property PaymentDataProvider;
 
-    public numeric function getNewInvoiceId() {
-        return InvoiceQueryHandler.getNewInvoiceId();
+
+    public model.payments.dto.NewInvoiceNumberDTO function getNewInvoiceId() {
+        InvoiceQueryHandler = new model.payments.handlers.InvoiceQueryHandler(PaymentDataProvider);
+        query = new model.payments.queries.GetInvoiceIdQuery();
+        return InvoiceQueryHandler.handle(query);
     }
 
 }

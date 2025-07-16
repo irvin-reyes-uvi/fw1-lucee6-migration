@@ -32,7 +32,8 @@ component extends="framework.one" {
         jsonPrettyPrint: true,
         reloadApplicationOnEveryRequest: true,
         diEngine: 'di1',
-        diLocations: '/model/services,/model/utils,/model/dao,/model/beans,/model/interfaces,/model/repositories,/controllers'
+        diLocations: '/model/services,/model/utils,/model/beans,/model/interfaces,/model/providers,/model/bookings,/model/payments,/controllers'
+
     };
 
 

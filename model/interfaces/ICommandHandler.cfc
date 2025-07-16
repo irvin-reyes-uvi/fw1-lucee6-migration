@@ -1,3 +1,7 @@
 interface {
-    public any function executeCommand(required struct commandData);
+    /**
+     * Handles a command.
+     * @command The command object to be processed.
+     */
+    public any function handle(required any command);
 }

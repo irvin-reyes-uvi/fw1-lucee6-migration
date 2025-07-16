@@ -1,9 +1,5 @@
-
-
 <cfoutput>
     <cfscript>
-
-
     v_from_date = now();
     v_to_date = dateAdd('yyyy', 3, now());
     v_selected_checkin_year = year(now());
@@ -20,9 +16,11 @@
     </cfscript>
 
     <form name="BookingSearchForm" id="BookingSearchForm" method="post" action="#buildURL(action = "main.doSearch")#">
-      <!---  <input type="hidden" name="SearchBooking" value="Search">
-        
-        <input type="hidden" name="varPaymentAction" value="PaymentForm"> --->
+        <!---
+            <input type="hidden" name="SearchBooking" value="Search">
+            
+            <input type="hidden" name="varPaymentAction" value="PaymentForm">
+        --->
 
         <input type="hidden" name="PaymentReason" value="MakePayment">
         <input type="hidden" name="MessageID" value="-1">
@@ -40,15 +38,21 @@
         >
             <tr>
                 <td>
-                    <img src="/assets/images/payment-title.gif" 
+                    <img
+                        src="/assets/images/payment-title.gif"
                         fetchpriority="high"
                         decoding="async"
-                        width="338" height="25">
+                        width="338"
+                        height="25"
+                    >
                 </td>
             </tr>
             <tr>
                 <td>
-                <cfif client.FailedBookFindTries GT 3 and dateCompare(dateFormat(now(), 'MM/DD/YYYY'), Client.FailedBookFindDt) EQ 0>
+                <cfif client.FailedBookFindTries GT 3 and dateCompare(
+                    dateFormat(now(), 'MM/DD/YYYY'),
+                    Client.FailedBookFindDt
+                ) EQ 0>
                     <table align="center" width="500" cellpadding="0" cellspacing="0">
                         <tr>
                             <td class="warning">
@@ -57,7 +61,6 @@
                             </td>
                         </tr>
                     </table>
-                    
                 </cfif>
             </tr>
             <tr>
@@ -158,14 +161,14 @@
                                     type="radio"
                                     name="rstbrand" id="brandSandals"
                                     value="S"<cfif rc.rstbrand eq 'S'>
-                                    
+
                                     </cfif>
                                 />Sandals
                                 <input
                                     type="radio"
                                     name="rstbrand" id="brandBeaches"
                                     value="B"<cfif rc.rstbrand eq 'B'>
-                                    
+
                                     </cfif>
                                 />Beaches
                             </td>
@@ -185,9 +188,9 @@
                             <td class="tablecell heightCell">
                                 <select name="ResortCodeS" id="ResortCodeS" class="dkgraysmall selectResort">
                                     <option value="">---Select Resort---</option>
-                                    <cfloop query="#rc.Resorts#">
-                                        <cfif resort_type EQ 'S'>
-                                            <option value="#rst_code#"<cfif rst_code IS rc.ResortCode> SELECTED </cfif>>#encodeForHTML(Resort_Name)#</option>
+                                    <cfloop array="#rc.Resorts#" index="resort">
+                                        <cfif resort.type EQ 'S'>
+                                            <option value="#resort.code#"<cfif resort.code IS rc.ResortCode> SELECTED </cfif>>#encodeForHTML(resort.name)#</option>
                                         </cfif>
                                     </cfloop>
                                 </select>
@@ -198,15 +201,15 @@
                                 >
                             </td>
                         </tr>
-                        
+
                         <tr id="rstBeaches">
                             <td class="tablecell heightCell">Resort</td>
                             <td class="tablecell">
                                 <select name="ResortCodeB" id="ResortCodeB" class="dkgraysmall" style="width:260px">
                                     <option value="">---Select Resort---</option>
-                                    <cfloop query="#rc.Resorts#">
-                                        <cfif resort_type EQ 'B'>
-                                            <option value="#rst_code#"<cfif rst_code IS rc.ResortCode> SELECTED </cfif>>#encodeForHTML(Resort_Name)#</option>
+                                    <cfloop array="#rc.Resorts#" index="resort">
+                                        <cfif resort.type EQ 'B'>
+                                            <option value="#resort.code#"<cfif resort.code IS rc.ResortCode> SELECTED </cfif>>#encodeForHTML(resort.name)#</option>
                                         </cfif>
                                     </cfloop>
                                 </select>
@@ -264,7 +267,6 @@
                     </table>
                 </td>
             </tr>
-
         </table>
     </form>
 </cfoutput>

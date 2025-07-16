@@ -28,6 +28,7 @@ component accessors="true" {
         rc.MinPayment = rc.MinPayment ?: 5;
 
         rc.Resorts = ResortQueryService.getAllResorts();
+        
 
         var hasTranId = structKeyExists(client, 'tran_id') && len(client.tran_id) > 0;
         if (hasTranId) {
@@ -46,6 +47,7 @@ component accessors="true" {
             dateFormat(now(), 'MM/DD/YYYY'),
             client.FailedBookFindDt
         ) == 0;
+        
         if (hasExceedTriesNumber) {
             rc.ErrorMessage = 'Sorry, but you have exceeded the number of tries to find your booking, you must wait 24 hours to try again.';
             return;
@@ -83,15 +85,16 @@ component accessors="true" {
         rc.ThisYear = year(now());
         rc.ThisMonth = month(now());
 
-
         if (!len(rc.BookingNumber)) rc.ErrorMessage = 'Booking number is required.';
         if (!len(rc.GroupName)) rc.ErrorMessage &= ' Group Name is required.';
         if (!len(rc.ResortCode)) rc.ErrorMessage &= ' Resort selection is required.';
         if (!len(rc.CheckInDt)) rc.ErrorMessage &= ' Check-in date is required.';
-        rc.Resorts = ResortQueryService.getAllResorts();
+
+        Resorts = ResortQueryService.getAllResorts();
+        rc.Resorts = Resorts;
         rc.qryCountries = PaymentService.getCountries();
         if (len(rc.ErrorMessage)) {
-            rc.Resorts = ResortQueryService.getAllResorts();
+            rc.Resorts = Resorts;
             return;
         }
 
@@ -104,14 +107,14 @@ component accessors="true" {
                 rc.BookingNumber = verifiedBooking;
             } else {
                 rc.ErrorMessage = 'Confirmation number is not valid.';
-                rc.Resorts = ResortQueryService.getAllResorts();
+                rc.Resorts = Resorts;
                 // variables.fw.renderView(view = 'main/default');
                 return;
             }
         }
 
-
-        if (compareNoCase(rc.PaymentReason, 'EmailReminder') == 0) {
+        isNotEmailRemainder = compareNoCase(rc.PaymentReason, 'EmailReminder') == 0;
+        if (isNotEmailRemainder) {
             structBookingInfo = PaymentService.verifyBookingFromWebService(rc.Email, rc.BookingNumber);
         } else {
             structBookingInfo = PaymentService.checkGroupBookingFromWebService(
@@ -123,7 +126,7 @@ component accessors="true" {
         }
 
         rc.structBookingInfo = structBookingInfo;
-        rc.qryCategoryRoomInfo = ResortQueryService.getRoomCategoryInfo(rc.structBookingInfo);
+        //rc.qryCategoryRoomInfo = ResortQueryService.getRoomCategoryInfo(rc.structBookingInfo.BookingInfo);
         isVerified = rc.structBookingInfo.status == 'True';
         if (isVerified) {
             session.OPPaymentInfo = {
@@ -138,7 +141,7 @@ component accessors="true" {
             rc.ErrorMessage = 'Your reservation was not found in our system.';
             client.FailedBookFindTries = client.FailedBookFindTries + 1;
             client.FailedBookFindDt = dateFormat(now(), 'MM/DD/YYYY');
-            rc.Resorts = ResortQueryService.getAllResorts();
+            rc.Resorts = Resorts;
         }
     }
 

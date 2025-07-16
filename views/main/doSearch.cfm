@@ -1,10 +1,9 @@
-
-    
     <cfscript>
-
+        client.FailedBookFindTries =  0;
         structBookingInfo = rc.structBookingInfo;
+        //writeDump(var=structBookingInfo, label="structBookingInfo", abort=true);
         Resorts = rc.Resorts;
-        
+
         ThisYear = rc.ThisYear;
         ThisMonth = rc.ThisMonth;
         
@@ -30,8 +29,6 @@
     </cfscript>
     <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#f5f5f5" border="0" id="pageholder" align="center">
       <tr>
-
-
             <td valign="top" align="center">
                 <table width="500" cellpadding="0" cellspacing="0" title="Group Online Payment" align="center" class="marginT20">
                     <tr>
@@ -97,7 +94,7 @@
                                                                 
                                                             </cfif>
 
-                                                            <cfif verified is "False" AND NOT ISDEFINED("structBookingInfo.BookingInfo.BookingType")>
+                                                            <cfif !verified >
                                                                 <p>Your reservation was not found in our system. Please call 800-327-1991 ext.6172
                                                                 for assistance. </p>
                                                                 <div id="highlightsection" class="indent">
@@ -115,13 +112,13 @@
                                             <cfif CompareNoCase(verified,"True") IS 0>
                                                 <cfscript>
                                                     
-                                                 qryRoomCategoryInfo = rc.qryCategoryRoomInfo;
+                                                 //qryRoomCategoryInfo = rc.qryCategoryRoomInfo;
 
                                                 </cfscript>
                                                
-
+                                                <!---
                                                 <cfif qryRoomCategoryInfo.recordcount gt 0><cfset v_room_desc = qryRoomCategoryInfo.CATEGORY_NAME/></cfif>
-
+                                                --->
                                                     <cfset Client.FailedBookFindTries = 0>
                                                     <cfset Client.FailedBookFindDt = "">
 
@@ -137,9 +134,9 @@
                                                                 <tr bgcolor="FFFFFF">
                                                                     <td  class="tablecell  heightCell">Resort:</td>
                                                                     <td  class="highlight  heightCell">
-                                                                        <cfloop query="Resorts">
-                                                                            <cfif Resorts.rst_code IS "#structBookingInfo.BookingInfo.resort#">
-                                                                                #Resort_Name#
+                                                                        <cfloop array="#rc.Resorts#" index="Resort">
+                                                                            <cfif Resort.code IS "#structBookingInfo.BookingInfo.resort#">
+                                                                                #Resort.name#
                                                                                 <cfbreak>
                                                                             </cfif>
                                                                         </cfloop>
@@ -381,13 +378,6 @@
                                                                           <td align="center" colspan="3"  class="heightCell">&nbsp;</td>
                                                                          </tr>
 
-                                                                         <!---
-                                                                            <cfif error_test_handler.isDoingTestNow()>
-                                                                                <tr>
-                                                                                <td class="tablecell" colspan="3"  class="heightCell"><p style="color:red;">Note: This is testing now. The form is posting to '#CGI.SCRIPT_NAME#'<p></td>
-                                                                                </tr>
-                                                                            </cfif>
-                                                                          --->
                                                                     </table>
                                                                 </td>
                                                             </cfif>
@@ -396,9 +386,7 @@
                                             </cfif>
                                         </form>
                                     </cfoutput>
-                                    
-                                  
-                            
+                    
                         </td>
                     </tr>
                     <tr>
@@ -431,4 +419,3 @@
             </td>
         </tr>
     </table>
-
