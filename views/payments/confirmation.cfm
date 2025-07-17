@@ -1,7 +1,6 @@
 <cf_expire_page>
 
 <cfscript>
-
 error_test_handler = new model.utils.ErrorNTestHandler().initurl(url);
 
 isCCShift4Now = application.isDev;
@@ -18,13 +17,11 @@ v_new_shift4_error = '';
 v_cc_transaction_id = '';
 v_processor = '';
 v_new_shift4_error_message = '';
-prcDatasource = 'prcgold';
 
 emailsNotifications = 'weddinggroups@uvltd.com,socialgroups@uvltd.com,incentivegroups@uvltd.com,anneth.zavala@sanservices.hn';
 
-tmpDatasource = isTest ? 'webgold' : 'webgold_production';
-</cfscript>
 
+</cfscript>
 
 <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#f5f5f5" border="0" id="pageholder" align="center">
     <tr>
@@ -34,7 +31,7 @@ tmpDatasource = isTest ? 'webgold' : 'webgold_production';
                 cellpadding="0"
                 cellspacing="0"
                 title="Groups Online Payment"
-                align="center" style="margin-top:20px; "
+                align="center" style="margin-top:20px;"
             >
                 <tr>
                     <td align="left">
@@ -123,7 +120,6 @@ tmpDatasource = isTest ? 'webgold' : 'webgold_production';
                                     <cfdump var="session.OPPaymentInfo" label="inside month validation" abort="true">
                                     <cflocation url=#buildUrl("main.default")# addtoken="no"/>
                                 </cfif>
-                                
 
                                 <cfset DAYPART = dateFormat(now(), 'DDMMYY')>
                                 <cfset INVOICE = DAYPART & rc.NewInvoiceID>
@@ -150,7 +146,7 @@ tmpDatasource = isTest ? 'webgold' : 'webgold_production';
                                 <cfif not isDefined('form.sandalsbookingnumber')>
                                     <cfset form.sandalsbookingnumber = 0>
                                 </cfif>
-                                
+
                                 <cfset isBookingDetailsEmpty = (rc.qryAssignment.getBookingNumber() IS '0') OR (
                                     rc.qryAssignment.getReservationNumber() IS '0'
                                 )>
@@ -177,7 +173,6 @@ tmpDatasource = isTest ? 'webgold' : 'webgold_production';
                             </cftry>
 
                             <cftry>
-                                
                                 <cfset isCCSystemv2 = true/>
 
                                 <cfif isCCSystemv2>
@@ -190,8 +185,8 @@ tmpDatasource = isTest ? 'webgold' : 'webgold_production';
                                             text="cc_transaction='CCSystemV2'  isCCSystemv2='#isCCSystemv2#' booking='#form.sandalsbookingnumber#'  Info='Real CC, Call WS processTransaction' CardNumber='#session.OPPaymentInfo.CreditCard#' amount='#form.paymentamount#'"
                                         />
                                     </cfif>
-                                    
-                                   <cfset ccAuthorizationStruct = rc.authorizationData>
+
+                                    <cfset ccAuthorizationStruct = rc.authorizationData>
                                 </cfif>
                                 <cfcatch type="any">
                                     <cfscript>
@@ -215,8 +210,8 @@ tmpDatasource = isTest ? 'webgold' : 'webgold_production';
                             <cfset structCardInfo.Approved = 'False'><!--- initially, set into False --->
                             <cftry>
                                 <cfif isCCSystemv2>
-                                    <cfset PaymentResultsStructObj = ccAuthorizationStruct>
-                                    <cfif structKeyExists(PaymentResultsStructObj.result.error, 'code')>
+                                    
+                                    <cfif structKeyExists(rc.PaymentResultsStructObj.result.error, 'code')>
                                         <cfset errorFlag = true>
                                     <cfelse>
                                         <cfset errorFlag = false>
@@ -227,7 +222,7 @@ tmpDatasource = isTest ? 'webgold' : 'webgold_production';
                                             <cflog
                                                 type="information"
                                                 file="OnlinePaymentLogByTest"
-                                                text="booking='#form.sandalsbookingnumber#'  Info='CCsystemV2, error in PaymentResultsStructObj.result.error--#errorFlag#' amount='#form.paymentamount#'"
+                                                text="booking='#form.sandalsbookingnumber#'  Info='CCsystemV2, error in rc.PaymentResultsStructObj.result.error--#errorFlag#' amount='#form.paymentamount#'"
                                             />
                                         </cfif>
                                         <cfset structCardInfo.Message = 'There was a problem processing your credit card; please try again'>
@@ -236,28 +231,30 @@ tmpDatasource = isTest ? 'webgold' : 'webgold_production';
                                         <cflog
                                             type="information"
                                             file="PostCC_transaction"
-                                            text="status='FAILED' booking='#form.sandalsbookingnumber#' Info='GOP CCsystemV2, error in PaymentResultsStructObj.result.error--#errorFlag#, errorMessage=#PaymentResultsStructObj.result.error.message#' amount='#form.paymentamount#' REMOTE_ADDR='#CGI.REMOTE_ADDR#' USER_AGENT='#CGI.HTTP_USER_AGENT#'"
+                                            text="status='FAILED' booking='#form.sandalsbookingnumber#' Info='GOP CCsystemV2, error in rc.PaymentResultsStructObj.result.error--#errorFlag#, errorMessage=#rc.PaymentResultsStructObj.result.error.message#' amount='#form.paymentamount#' REMOTE_ADDR='#CGI.REMOTE_ADDR#' USER_AGENT='#CGI.HTTP_USER_AGENT#'"
                                         />
                                     <cfelse>
                                         <cfif error_test_handler.isDoingTestNow()>
                                             <cflog
                                                 type="information"
                                                 file="OnlinePaymentLogByTest"
-                                                text="booking='#form.sandalsbookingnumber#'  Info='CCsystemV2, PaymentResultsStructObj.result.error--#errorFlag#,OK'  amount='#form.paymentamount#'"
+                                                text="booking='#form.sandalsbookingnumber#'  Info='CCsystemV2, rc.PaymentResultsStructObj.result.error--#errorFlag#,OK'  amount='#form.paymentamount#'"
                                             />
                                         </cfif>
-                                        <cfset structCCResponse = PaymentResultsStructObj.result/>
-                                        <cfset structCardInfo.AuthorizationCode = '#structCCResponse.transaction.authCode#'>
-                                        <cfset v_new_token_string = '#structCCResponse.transaction.token#'>
-                                        <cfset v_new_response_code = '#structCCResponse.transaction.responseCode#'>
-                                        <cfset v_cc_transaction_id = '#structCCResponse.transaction.orderNumber#'>
-                                        <cfset v_processor = '#structCCResponse.transaction.gateway#'>
-                                        <cfif structCCResponse.transaction.approved>
+
+                  
+                                        <cfset structCardInfo.AuthorizationCode = '#rc.structCCResponse.transaction.authCode#'>
+                                        <cfset v_new_token_string = '#rc.structCCResponse.transaction.token#'>
+                                        <cfset v_new_response_code = '#rc.structCCResponse.transaction.responseCode#'>
+                                        <cfset v_cc_transaction_id = '#rc.structCCResponse.transaction.orderNumber#'>
+                                        <cfset v_processor = '#rc.structCCResponse.transaction.gateway#'>
+
+                                        <cfif rc.structCCResponse.transaction.approved>
                                             <cfif error_test_handler.isDoingTestNow()>
                                                 <cflog
                                                     type="information"
                                                     file="OnlinePaymentLogByTest"
-                                                    text="booking='#form.sandalsbookingnumber#'  Info='CCsystemV2, Approved!--#structCCResponse.success#--#structCCResponse.transaction.authCode#'  amount='#form.paymentamount#'"
+                                                    text="booking='#form.sandalsbookingnumber#'  Info='CCsystemV2, Approved!--#rc.structCCResponse.success#--#rc.structCCResponse.transaction.authCode#'  amount='#form.paymentamount#'"
                                                 />
                                             </cfif>
                                             <cfset structCardInfo.Message = 'Credit Card transaction was approved'>
@@ -272,7 +269,7 @@ tmpDatasource = isTest ? 'webgold' : 'webgold_production';
                                                 <cflog
                                                     type="information"
                                                     file="OnlinePaymentLogByTest"
-                                                    text="booking='#form.sandalsbookingnumber#'  Info='CCsystemV2, Failed!--#structCCResponse.success#--#structCardInfo.AuthorizationCode#' CardNumber='#session.OPPaymentInfo.CreditCard#' amount='#form.paymentamount#'"
+                                                    text="booking='#form.sandalsbookingnumber#'  Info='CCsystemV2, Failed!--#rc.structCCResponse.success#--#structCardInfo.AuthorizationCode#' CardNumber='#session.OPPaymentInfo.CreditCard#' amount='#form.paymentamount#'"
                                                 />
                                             </cfif>
                                             <cfset structCardInfo.Message = 'Your Credit Card has been declined'>
@@ -285,43 +282,7 @@ tmpDatasource = isTest ? 'webgold' : 'webgold_production';
                                             />
                                         </cfif>
                                     </cfif>
-                                <cfelseif isCCShift4Now>
-
-                                    <cfset structCardInfo.Approved = 'False'>
-                                    <cfif v_new_shift4_error eq 0>
-                                        <!--- transaction was successful --->
-                                        <cfset structCardInfo.Approved = 'True'>
-                                        <cfset structCardInfo.Message = 'Credit Card transaction was approved'>
-                                        <cfset structCardInfo.AuthorizationCode = cc_transaction_result.auth>
-                                        <cflog
-                                            type="information"
-                                            file="OnlinePaymentErr"
-                                            text="booking='#form.sandalsbookingnumber#' Info='Shift4, Approved! token='#v_new_token_string#', response_code='#v_new_response_code#'"
-                                        />
-                                        <cfif error_test_handler.isDoingTestNow()>
-                                            <cflog
-                                                type="information"
-                                                file="OnlinePaymentLogByTest"
-                                                text="booking='#form.sandalsbookingnumber#'  Info='Shift4, Approved! token='#v_new_token_string#', response_code='#v_new_response_code#', error_message='#v_new_shift4_error_message#'"
-                                            />
-                                        </cfif>
-                                    <cfelse>
-                                        <cfset structCardInfo.Approved = 'False'>
-                                        <cfset structCardInfo.Message = v_new_shift4_error_message>
-                                        <cfset structCardInfo.AuthorizationCode = ''>
-                                        <cflog
-                                            type="information"
-                                            file="OnlinePaymentErr"
-                                            text="booking='#form.sandalsbookingnumber#'  Info='Shift4, Failed  token='#v_new_token_string#', response_code='#v_new_response_code#', error_message='#v_new_shift4_error_message#'"
-                                        />
-                                        <cfif error_test_handler.isDoingTestNow()>
-                                            <cflog
-                                                type="information"
-                                                file="OnlinePaymentLogByTest"
-                                                text="booking='#form.sandalsbookingnumber#'  Info='Shift4, Failed token='#v_new_token_string#', response_code='#v_new_response_code#', error_message='#v_new_shift4_error_message#'"
-                                            />
-                                        </cfif>
-                                    </cfif>
+                                
                                 <cfelse><!--- use old CC system, real CC:  non-testing credit card --->
                                     <cfif NOT isXML(ccAuthorizationStruct)>
                                         <!--- if the returned data has bad xml format, ERROR --->
@@ -420,7 +381,6 @@ tmpDatasource = isTest ? 'webgold' : 'webgold_production';
                             <cftry>
                                 <cfif structCardInfo.Approved>
                                     <cfset CCType = ''>
-
                                     <cfset CCType = rc.ccType/>
 
                                     <cfif error_test_handler.isDoingTestNow()>
@@ -430,92 +390,6 @@ tmpDatasource = isTest ? 'webgold' : 'webgold_production';
                                             text="booking='#form.sandalsbookingnumber#'  Info='Call INSERT_CREDIT_CARD' CardNumber='#session.OPPaymentInfo.CreditCard#' amount='#form.paymentamount#'"
                                         />
                                     </cfif>
-                                    <cfset exp_date = '#session.OPPaymentInfo.month#' & '/01/' & '#session.OPPaymentInfo.year#'>
-                                    <cfstoredproc PROCEDURE="INSERT_CREDIT_CARD_LUCEE" DATASOURCE="#tmpDatasource#">
-                                        <cfprocparam TYPE="IN" CFSQLTYPE="CF_SQL_VARCHAR" VALUE="#ccType#">
-                                        <cfprocparam
-                                            TYPE="IN"
-                                            CFSQLTYPE="CF_SQL_VARCHAR"
-                                            VALUE="#session.OPPaymentInfo.CCFirstName# #session.OPPaymentInfo.CCLastName#"
-                                        >
-                                        <cfprocparam TYPE="IN" CFSQLTYPE="CF_SQL_VARCHAR" VALUE="#exp_date#">
-                                        <cfprocparam
-                                            TYPE="IN"
-                                            CFSQLTYPE="CF_SQL_VARCHAR"
-                                            VALUE="#form.sandalsbookingnumber#"
-                                        >
-                                        <cfprocparam TYPE="IN" CFSQLTYPE="cf_sql_integer" VALUE="#form.paymentamount#">
-                                        <cfprocparam
-                                            TYPE="IN"
-                                            CFSQLTYPE="CF_SQL_VARCHAR"
-                                            VALUE="#structCardInfo.AuthorizationCode#"
-                                        >
-                                        <cfprocparam
-                                            TYPE="IN"
-                                            CFSQLTYPE="CF_SQL_VARCHAR"
-                                            VALUE="#form.sandalsbookingnumber#"
-                                        >
-                                        <cfprocparam TYPE="IN" CFSQLTYPE="CF_SQL_VARCHAR" VALUE="#v_new_token_string#"><!---
-                                            pi_token_number
-                                        --->
-                                        <cfprocparam TYPE="IN" CFSQLTYPE="CF_SQL_VARCHAR" VALUE="#uCase(v_processor)#"><!-- Processor -->
-                                        <cfprocparam TYPE="IN" CFSQLTYPE="CF_SQL_VARCHAR" VALUE="#v_cc_transaction_id#"><!-- v_cc_transaction_id -->
-                                        <cfprocparam
-                                            TYPE="IN"
-                                            CFSQLTYPE="CF_SQL_VARCHAR"
-                                            VALUE="#session.OPPaymentInfo.CCAddress#"
-                                        ><!--- pi_billing_address --->
-                                        <cfprocparam TYPE="IN" CFSQLTYPE="CF_SQL_VARCHAR" VALUE=""><!---
-                                            pi_billing_address2
-                                        --->
-                                        <cfprocparam
-                                            TYPE="IN"
-                                            CFSQLTYPE="CF_SQL_VARCHAR"
-                                            VALUE="#session.OPPaymentInfo.CCCity#"
-                                        ><!--- pi_billing_city --->
-                                        <cfprocparam
-                                            TYPE="IN"
-                                            CFSQLTYPE="CF_SQL_VARCHAR"
-                                            VALUE="#session.OPPaymentInfo.CCState#"
-                                        ><!--- pi_billing_state --->
-                                        <cfprocparam
-                                            TYPE="IN"
-                                            CFSQLTYPE="CF_SQL_VARCHAR"
-                                            VALUE="#session.OPPaymentInfo.CCCountry#"
-                                        ><!--- pi_billing_country --->
-                                        <cfprocparam
-                                            TYPE="IN"
-                                            CFSQLTYPE="CF_SQL_VARCHAR"
-                                            VALUE="#session.OPPaymentInfo.CCZipCode#"
-                                        ><!--- pi_billing_zipcode --->
-                                        <cfprocparam TYPE="IN" CFSQLTYPE="CF_SQL_VARCHAR" VALUE="#form.email#"><!-- email -->
-                                    </cfstoredproc>
-
-                                    <!---
-                                        Proc added for new fields comment/reservationType issue: GOP-37 by Uziel Valdez on April-13-2015
-                                    --->
-                                    <cfstoredproc procedure="insert_reservation_comment" datasource="#prcDatasource#">
-                                        <cfprocparam
-                                            type="in"
-                                            cfsqltype="CF_SQL_NUMERIC"
-                                            value="#form.sandalsbookingnumber#"
-                                        >
-                                        <cfprocparam
-                                            type="in"
-                                            cfsqltype="CF_SQL_VARCHAR"
-                                            value="Type:#form.paymentType# comment:#form.comment#"
-                                        >
-                                        <cfprocparam type="in" cfsqltype="CF_SQL_VARCHAR" value="WEBGOLD">
-                                        <cfprocparam type="out" cfsqltype="CF_SQL_NUMERIC" variable="po_sucess_val">
-                                        <cfprocparam type="out" cfsqltype="CF_SQL_VARCHAR" variable="po_msg">
-                                        <cfprocparam type="in" cfsqltype="CF_SQL_VARCHAR" value="">
-                                    </cfstoredproc>
-
-                                    <cflog
-                                        type="information"
-                                        file="PostCC_transaction"
-                                        text="insert_reservation_comment: booking='#form.sandalsbookingnumber# Type:#form.paymentType# comment:#form.comment# po_sucess_val:#po_sucess_val# po_msg:#po_msg#'"
-                                    />
 
                                     <cfif error_test_handler.isDoingTestNow()>
                                         <cflog
@@ -570,17 +444,28 @@ tmpDatasource = isTest ? 'webgold' : 'webgold_production';
                                     <!--- Reset Security Variables --->
                                     <cfset Client.FailedPaymentTries = 0>
                                     <cfset Client.FailedPaymentDt = ''>
-                                    <!--- find if there is a log for this payment --->
 
                                     <cfif Form.MessageID GT -1>
-                                        <!--- Then this user is coming from email reminder, let's get the log ID --->
                                         <cftry>
-                                            <cfquery name="GetLogID" datasource="massmails">
-                                                    select log_id from options_Payments_logs where booking_number = '#form.bookingnumber#' and trunc(insert_date) = to_date('#dateFormat(now(), 'MM/DD/YYYY')#','mm/dd/yyyy')
-                                            </cfquery>
-                                            <!--- Let's get the last and update it --->
-                                            <cfset logID = GetLogID.log_id[GetLogID.RecordCount]>
-                                            <!--- Update record --->
+
+                                            <cfscript>
+           
+
+                                             var GetLogIDFuture = runAsync(() => queryExecute(
+                                                "SELECT log_id FROM options_Payments_logs WHERE booking_number = :bookingNumber AND trunc(insert_date) = to_date(:today, 'mm/dd/yyyy')",
+                                                {
+                                                    bookingNumber: { value: form.bookingNumber ?: "", cfsqltype: "cf_sql_varchar" },
+                                                    today: { value: dateFormat(now(), "MM/DD/YYYY"), cfsqltype: "cf_sql_varchar" }
+                                                },
+                                                { datasource: "massmails" }
+                                            ));
+
+                                            GetLogID = GetLogIDFuture.get();
+                                            logID = GetLogID.log_id[GetLogID.RecordCount]
+                                            </cfscript>
+
+                                            <!--- <cfset logID = GetLogID.log_id[GetLogID.RecordCount]> --->
+
                                             <cfif error_test_handler.isDoingTestNow()>
                                                 <cflog
                                                     type="information"
@@ -588,13 +473,21 @@ tmpDatasource = isTest ? 'webgold' : 'webgold_production';
                                                     text="booking='#form.sandalsbookingnumber#'  Info='Get logid,recordcount #GetLogID.recordcount#' CardNumber='#session.OPPaymentInfo.CreditCard#' amount='#form.paymentamount#'"
                                                 />
                                             </cfif>
-                                            <cfquery name="UpdateLog" datasource="massmails">
-                                                    update options_Payments_logs
-                                                    set
-                                                        Payment_processed = 'Y'
-                                                    where
-                                                        log_id = #logID#
-                                            </cfquery>
+
+                                            <cfscript>
+                                            UpdateLog = queryExecute(
+                                                    'update options_Payments_logs
+                                                        set
+                                                        Payment_processed = ''Y''
+                                                        where
+                                                        log_id = :logId',
+                                                {
+                                                    logId: {value: logID, cfsqltype: 'cf_sql_varchar'}
+                                                },
+                                                {datasource: "massmails"}
+                                            )
+                                            </cfscript>
+
                                             <cfcatch type="any">
                                                 <cflog
                                                     type="error"
@@ -604,6 +497,7 @@ tmpDatasource = isTest ? 'webgold' : 'webgold_production';
                                             </cfcatch>
                                         </cftry>
                                     </cfif>
+
                                     <cfset Client.currentBookingNumber = form.sandalsbookingnumber/>
                                     <cfset Client.currentCCNumber = session.OPPaymentInfo.CreditCard/>
                                     <cfset Client.remainingBalance = form.balance - form.PaymentAmount/>
@@ -654,7 +548,7 @@ tmpDatasource = isTest ? 'webgold' : 'webgold_production';
                                                     text="booking='#form.sandalsbookingnumber#'  Info='Sending email to #sendToEmail#, bcc to #bccfield#' CardNumber='#session.OPPaymentInfo.CreditCard#' amount='#form.paymentamount#'"
                                                 />
                                             </cfif>
-                                           
+
                                             <cfmail
                                                 from="#FromEmail#"
                                                 to="#sendToEmail#"
@@ -687,7 +581,9 @@ tmpDatasource = isTest ? 'webgold' : 'webgold_production';
                                                 <div
                                                     style="font-family: Arial, sans-serif; margin: 0; padding: 20px; color: 333; background-color: white; border-radius: 5px;"
                                                 >
-                                                    <h1 style="font-size: 24px; margin-bottom: 20px; text-decoration:underline;">Groups Online Payment Notification Email</h1>
+                                                    <h1
+                                                        style="font-size: 24px; margin-bottom: 20px; text-decoration:underline;"
+                                                    >Groups Online Payment Notification Email</h1>
                                                     <p style="font-size: 16px; gap:1em;">
                                                         <strong>Group Name:</strong> #Form.GroupName#<br>
                                                         <strong>Booking Number:</strong> #form.bookingnumber#<br>

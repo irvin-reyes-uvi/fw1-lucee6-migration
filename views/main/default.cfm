@@ -16,11 +16,6 @@
     </cfscript>
 
     <form name="BookingSearchForm" id="BookingSearchForm" method="post" action="#buildURL(action = "main.doSearch")#">
-        <!---
-            <input type="hidden" name="SearchBooking" value="Search">
-            
-            <input type="hidden" name="varPaymentAction" value="PaymentForm">
-        --->
 
         <input type="hidden" name="PaymentReason" value="MakePayment">
         <input type="hidden" name="MessageID" value="-1">
