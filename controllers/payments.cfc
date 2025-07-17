@@ -4,12 +4,13 @@ component accessors="true" {
     property PaymentService;
     property InvoiceService;
     property BookingService;
+    property TransactionService;
+    property PostCCTransactionService;
 
     public any function init(fw) {
         variables.fw = fw;
         return this;
     }
-
 
     function default(rc) {
         variables.fw.redirect(action = 'main.default', queryString = 'msg=503');
@@ -52,8 +53,7 @@ component accessors="true" {
         rc.qryAssignment = BookingService.getBookingDetails(rc.SandalsBookingNumber);
 
         obj_shift4Factory = createObject('component', 'model.utils.Shift4Factory');
-        obj_CCSystemv2 = createObject('component', 'model.utils.CCSystemv2');
-
+        
         qry_cctypes = obj_shift4Factory.getCCTypes();
         cc_type_code = obj_shift4Factory.getCCCodeById(session.OPPaymentInfo.CardType, qry_cctypes);
 
@@ -62,6 +62,7 @@ component accessors="true" {
 
         exp_date = '#session.OPPaymentInfo.month#' & '/01/' & '#session.OPPaymentInfo.year#';
         isTest = application.isDev;
+
         var transactionParams = {
             p_amount: rc.PaymentAmount,
             p_cardtype: cc_type_code,
@@ -80,16 +81,14 @@ component accessors="true" {
             p_checkInDate: rc.CheckInDt
         };
 
-
-        rc.authorizationData = obj_CCSystemv2.doCCTransaction(argumentCollection = transactionParams)
-        rc.ccType = obj_shift4Factory.getCCCode4DBById(session.OPPaymentInfo.CardType, qry_cctypes);
-
+        rc.authorizationData = TransactionService.processTransaction(
+            transactionParams = transactionParams
+        ).getTransactionAuthorization();
 
         rc.PaymentResultsStructObj = rc.authorizationData;
-
         rc.structCCResponse = rc.PaymentResultsStructObj.result;
 
-        isCCSystemv2 = isTest;
+        rc.ccType = obj_shift4Factory.getCCCode4DBById(session.OPPaymentInfo.CardType, qry_cctypes);
 
         isTransactionApproved = rc.structCCResponse.transaction.approved;
         if (isTransactionApproved) {
@@ -98,54 +97,54 @@ component accessors="true" {
             v_processor = '#rc.structCCResponse.transaction.gateway#'
             AuthorizationCode = rc.structCCResponse.transaction.authCode ?: '';
 
-            webgold = isTest ? 'webgold' : 'webgold_production';
-            cfstoredproc(procedure = "INSERT_CREDIT_CARD_LUCEE", datasource = webgold) {
-                cfprocparam(type = "IN", cfsqltype = "CF_SQL_VARCHAR", value = rc.ccType);
-                cfprocparam(
-                    type = "IN",
-                    cfsqltype = "CF_SQL_VARCHAR",
-                    value = session.OPPaymentInfo.CCFirstName & " " & session.OPPaymentInfo.CCLastName
-                );
 
-                cfprocparam(type = "IN", cfsqltype = "CF_SQL_VARCHAR", value = exp_date);
-                cfprocparam(type = "IN", cfsqltype = "CF_SQL_VARCHAR", value = rc.SandalsBookingNumber);
-                cfprocparam(type = "IN", cfsqltype = "CF_SQL_INTEGER", value = rc.PaymentAmount);
-                cfprocparam(type = "IN", cfsqltype = "CF_SQL_VARCHAR", value = AuthorizationCode);
-                cfprocparam(type = "IN", cfsqltype = "CF_SQL_VARCHAR", value = rc.SandalsBookingNumber);
-                cfprocparam(type = "IN", cfsqltype = "CF_SQL_VARCHAR", value = v_new_token_string);
-                cfprocparam(type = "IN", cfsqltype = "CF_SQL_VARCHAR", value = uCase(v_processor));
-                cfprocparam(type = "IN", cfsqltype = "CF_SQL_VARCHAR", value = v_cc_transaction_id);
-                cfprocparam(type = "IN", cfsqltype = "CF_SQL_VARCHAR", value = session.OPPaymentInfo.CCAddress);
-                cfprocparam(type = "IN", cfsqltype = "CF_SQL_VARCHAR", value = "");
-                cfprocparam(type = "IN", cfsqltype = "CF_SQL_VARCHAR", value = session.OPPaymentInfo.CCCity);
-                cfprocparam(type = "IN", cfsqltype = "CF_SQL_VARCHAR", value = session.OPPaymentInfo.CCState);
-                cfprocparam(type = "IN", cfsqltype = "CF_SQL_VARCHAR", value = session.OPPaymentInfo.CCCountry);
-                cfprocparam(type = "IN", cfsqltype = "CF_SQL_VARCHAR", value = session.OPPaymentInfo.CCZipCode);
-                cfprocparam(type = "IN", cfsqltype = "CF_SQL_VARCHAR", value = rc.Email);
-            }
+            transactionStruct = {
+                ccType: rc.ccType,
+                ccName: session.OPPaymentInfo.CCFirstName & " " & session.OPPaymentInfo.CCLastName,
+                exp_date: exp_date,
+                SandalsBookingNumber: rc.SandalsBookingNumber,
+                PaymentAmount: rc.PaymentAmount,
+                AuthorizationCode: AuthorizationCode,
+                SandalsBookingNumber2: rc.SandalsBookingNumber,
+                newTokenString: v_new_token_string,
+                processor: uCase(v_processor),
+                ccTransactionId: v_cc_transaction_id,
+                ccAddress: session.OPPaymentInfo.CCAddress,
+                blankField: "",
+                ccCity: session.OPPaymentInfo.CCCity,
+                ccState: session.OPPaymentInfo.CCState,
+                ccCountry: session.OPPaymentInfo.CCCountry,
+                ccZipCode: session.OPPaymentInfo.CCZipCode,
+                Email: rc.Email
+            };
 
-            commentText = 'Type:#rc.PaymentType# comment:#rc.comment#';
+             commentStruct = {
+                SandalsBookingNumber: rc.SandalsBookingNumber,
+                commentText: "Type:#rc.PaymentType# comment:#rc.comment#",
+                source: "WEBGOLD",
+                emptyString: ""
+            };
 
-            cfstoredproc(procedure = "insert_reservation_comment", datasource = "prcgold") {
-                cfprocparam(type = "in", cfsqltype = "CF_SQL_NUMERIC", value = rc.SandalsBookingNumber);
-                cfprocparam(type = "in", cfsqltype = "CF_SQL_VARCHAR", value = commentText);
-                cfprocparam(type = "in", cfsqltype = "CF_SQL_VARCHAR", value = "WEBGOLD");
-                cfprocparam(type = "out", cfsqltype = "CF_SQL_NUMERIC", variable = "po_sucess_val");
-                cfprocparam(type = "out", cfsqltype = "CF_SQL_VARCHAR", variable = "po_msg");
-                cfprocparam(type = "in", cfsqltype = "CF_SQL_VARCHAR", value = "");
-            }
-
-            writeLog(
-                type = 'information',
-                file = 'PostCC_transaction',
-                text = 'insert_reservation_comment: booking=''#rc.SandalsBookingNumber# Type:#rc.PaymentType# comment:#rc.comment# po_sucess_val:#po_sucess_val# po_msg:#po_msg#'''
+            transactionSucceed = PostCCTransactionService.processPostCCTransaction(
+                transactionParams = transactionStruct,
+                commentStruct = commentStruct
             );
+
+            po_sucess_val = transactionSucceed.getPoSucessVal();
+            po_msg = transactionSucceed.getPoMsg();
+            isTransactionSucceed = transactionSucceed.getSuccess();
+
+            if(isTransactionSucceed) {
+                  writeLog(
+                    type = 'information',
+                    file = 'PostCC_transaction',
+                    text = 'insert_reservation_comment: booking=''#rc.SandalsBookingNumber# Type:#rc.PaymentType# comment:#rc.comment# po_sucess_val:#po_sucess_val# po_msg:#po_msg#'''
+                );
+            }
+
+          
         }
 
-
-
-        // writeDump(var=rc.qryAssignment, label="qryAssignment");
-        // writeDump(var=rc.NewInvoiceID, label="NewInvoiceID", abort=true);
     }
 
     function processPayment(rc) {
@@ -231,8 +230,6 @@ component accessors="true" {
             );
         }
 
-        // Resorts = rc.Resorts;
-
         hasTranId = structKeyExists(client, 'tran_id');
         tranIdLen = hasTranId ? len(client.tran_id) : 0;
         hasTranIdValue = hasTranId && tranIdLen > 0;
@@ -310,7 +307,7 @@ component accessors="true" {
             year: Form.year
         };
 
-        //writeDump(var = session.OPPaymentInfo, label = 'session.OPPaymentInfo', abort = false);
+    
     }
 
     private function validateCreditCardType(ccnumber = '', cctype = '', cccvv = '') {

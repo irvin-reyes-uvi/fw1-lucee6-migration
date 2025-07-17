@@ -450,7 +450,6 @@ emailsNotifications = 'weddinggroups@uvltd.com,socialgroups@uvltd.com,incentiveg
 
                                             <cfscript>
            
-
                                              var GetLogIDFuture = runAsync(() => queryExecute(
                                                 "SELECT log_id FROM options_Payments_logs WHERE booking_number = :bookingNumber AND trunc(insert_date) = to_date(:today, 'mm/dd/yyyy')",
                                                 {
@@ -538,17 +537,7 @@ emailsNotifications = 'weddinggroups@uvltd.com,socialgroups@uvltd.com,incentiveg
                                             trim(sendToEmail)
                                         )>
                                             <cfset bccfield = ''/>
-                                            <!--- <cfif error_test_handler.isDoingTestNow()> --->
-                                            <cfset bccfield = 'marcelo.martinez@uvltd.tech'>
-                                            <!--- </cfif> --->
-                                            <cfif error_test_handler.isDoingTestNow()>
-                                                <cflog
-                                                    type="information"
-                                                    file="OnlinePaymentLogByTest"
-                                                    text="booking='#form.sandalsbookingnumber#'  Info='Sending email to #sendToEmail#, bcc to #bccfield#' CardNumber='#session.OPPaymentInfo.CreditCard#' amount='#form.paymentamount#'"
-                                                />
-                                            </cfif>
-
+                                            <cfset bccfield = 'irvin.reyes@sanservices.hn'>
                                             <cfmail
                                                 from="#FromEmail#"
                                                 to="#sendToEmail#"
@@ -570,6 +559,7 @@ emailsNotifications = 'weddinggroups@uvltd.com,socialgroups@uvltd.com,incentiveg
                                                     </p>
                                                 </div>
                                             </cfmail>
+
                                             <cfmail
                                                 from="#FromEmail#"
                                                 to="#emailsNotifications#"
