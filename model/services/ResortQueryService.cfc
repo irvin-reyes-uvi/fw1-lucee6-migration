@@ -11,14 +11,10 @@ component accessors="true" displayName="ResortQueryService" {
     }
 
     public model.bookings.dto.RoomCategoryDTO function getRoomCategoryInfo(required struct bookingInfo) {
-        roomCategoryQueryHandler = new model.bookings
-                                            .handlers
-                                            .RoomCategoryQueryHandler(BookingDataProvider);
+        roomCategoryQueryHandler = new model.bookings.handlers.RoomCategoryQueryHandler(BookingDataProvider);
 
-        query = new model.bookings
-                         .queries
-                         .GetRoomCategoryQuery(bookingInfo.resort, bookingInfo.roomCategory);
-                         
+        query = new model.bookings.queries.GetRoomCategoryQuery(bookingInfo.resort, bookingInfo.roomCategory);
+
         return roomCategoryQueryHandler.handle(query);
     }
 
