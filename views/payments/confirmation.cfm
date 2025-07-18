@@ -18,7 +18,7 @@ v_cc_transaction_id = '';
 v_processor = '';
 v_new_shift4_error_message = '';
 
-emailsNotifications = 'weddinggroups@uvltd.com,socialgroups@uvltd.com,incentivegroups@uvltd.com,anneth.zavala@sanservices.hn';
+
 
 
 </cfscript>
@@ -85,13 +85,7 @@ emailsNotifications = 'weddinggroups@uvltd.com,socialgroups@uvltd.com,incentiveg
                                     >
                                 </td>
                             </tr>
-                            <cfif error_test_handler.isDoingTestNow()>
-                                <tr>
-                                    <td>
-                                        <h4 style="color:red;">Note: on testing now</h4>
-                                    </td>
-                                </tr>
-                            </cfif>
+
                         </table>
                     </form>
                 </cfoutput>
@@ -521,96 +515,10 @@ emailsNotifications = 'weddinggroups@uvltd.com,socialgroups@uvltd.com,incentiveg
                                         file="OnlinePaymentLogByTest2"
                                         text="booking='#form.sandalsbookingnumber#'  Info='Sending email to #form.email# first"
                                     />
-                                    <cfif len(form.email)>
-                                        <cfset sendToEmail = form.email>
-                                        <cflog
-                                            type="information"
-                                            file="OnlinePaymentLogByTest2"
-                                            text="booking='#form.sandalsbookingnumber#'  Info='Sending email to #sendToEmail# second"
-                                        />
-                                        <cfset FromEmail = 'info@sandals.com'>
-                                        <cfset ReplyToEmail = 'info@sandals.com'>
-                                        <cfset ExtraMessage = 'If you have any questions or would like to speak to a Sandals & Beaches agent please call us at 1-888-SANDALS.'>
-
-                                        <cfif reFindNoCase(
-                                            '^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*\.(([a-z]{2,6})|(aero|coop|info|museum|name|tech))$',
-                                            trim(sendToEmail)
-                                        )>
-                                            <cfset bccfield = ''/>
-                                            <cfset bccfield = 'irvin.reyes@sanservices.hn'>
-                                            <cfmail
-                                                from="#FromEmail#"
-                                                to="#sendToEmail#"
-                                                subject="Payment Confirmation"
-                                                replyto="#ReplyToEmail#"
-                                                bcc="#bccfield#"
-                                                type="html"
-                                            >
-                                                <div
-                                                    style="font-family: Arial, sans-serif; margin: 0; padding: 20px; color: 333; background-color: white; border-radius: 5px;"
-                                                >
-                                                    <h1
-                                                        style="font-size: 24px; margin-bottom: 20px; text-decoration: underline;"
-                                                    >Payment Confirmation</h1>
-                                                    <p style="font-size: 16px;">
-                                                        <strong>Your card was charged #dollarFormat(form.paymentamount)# and applied to your Reservation number #form.sandalsbookingnumber#.</strong><br>
-                                                        Thank you for your business. Please allow 24-48 hours for your payment to be reflected on your account.<br>
-                                                        #ExtraMessage#
-                                                    </p>
-                                                </div>
-                                            </cfmail>
-
-                                            <cfmail
-                                                from="#FromEmail#"
-                                                to="#emailsNotifications#"
-                                                subject="Groups Online Payment Notification Email - Group Name: #Form.GroupName# - Booking Number: #form.bookingnumber#"
-                                                replyto="#ReplyToEmail#"
-                                                bcc="#bccfield#"
-                                                type="html"
-                                            >
-                                                <div
-                                                    style="font-family: Arial, sans-serif; margin: 0; padding: 20px; color: 333; background-color: white; border-radius: 5px;"
-                                                >
-                                                    <h1
-                                                        style="font-size: 24px; margin-bottom: 20px; text-decoration:underline;"
-                                                    >Groups Online Payment Notification Email</h1>
-                                                    <p style="font-size: 16px; gap:1em;">
-                                                        <strong>Group Name:</strong> #Form.GroupName#<br>
-                                                        <strong>Booking Number:</strong> #form.bookingnumber#<br>
-                                                        <strong>Comment:</strong> #form.comment#<br>
-                                                        <strong>Date and Time of comment:</strong> #dateFormat(now(), 'mm/dd/yyyy')# at #timeFormat(now(), 'HH:mm:ss')#
-                                                    </p>
-                                                </div>
-                                            </cfmail>
-                                        <cfelse>
-                                            <cfmail
-                                                from="info@sandals.com"
-                                                subject="illegalemail  error in online payment"
-                                                to="marcelo.martinez@uvltd.tech"
-                                                type="html"
-                                            >
-                                                <cfdump var="LocalHostName = #LocalHostName#">
-                                                <cfdump var="#form#">
-                                            </cfmail>
-                                            <cflog
-                                                type="error"
-                                                file="OnlinePaymentErr"
-                                                text="Error='Invalid Email in Payment Confirmation' email='#sendToEmail#' booking='#form.sandalsbookingnumber#' amount='#dollarFormat(form.paymentamount)#'"
-                                            />
-                                        </cfif>
-                                    </cfif>
+                                    <!--- send email to the user, if email is valid --->
 
                                     <cfcatch type="any">
-                                        <cfmail
-                                            from="info@sandals.com"
-                                            subject="error1 in online payment"
-                                            to="fabouradi@uvi.sandals.com"
-                                            type="html"
-                                        >
-                                            <cfdump var="LocalHostName = #LocalHostName#">
-                                            <cfdump var="#form#">
-                                            <cfdump var="#cfcatch#">
-                                        </cfmail>
+                                       <!--- fa --->
                                         <cfset error_test_handler.reportError(
                                             cfcatch,
                                             error_test_handler.SENDING_EMAIL,

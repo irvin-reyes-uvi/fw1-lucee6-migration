@@ -6,7 +6,8 @@ component accessors="true" {
     property BookingService;
     property TransactionService;
     property PostCCTransactionService;
-
+    property EmailService;
+    
     public any function init(fw) {
         variables.fw = fw;
         return this;
@@ -53,7 +54,7 @@ component accessors="true" {
         rc.qryAssignment = BookingService.getBookingDetails(rc.SandalsBookingNumber);
 
         obj_shift4Factory = createObject('component', 'model.utils.Shift4Factory');
-        
+
         qry_cctypes = obj_shift4Factory.getCCTypes();
         cc_type_code = obj_shift4Factory.getCCCodeById(session.OPPaymentInfo.CardType, qry_cctypes);
 
@@ -81,70 +82,81 @@ component accessors="true" {
             p_checkInDate: rc.CheckInDt
         };
 
-        rc.authorizationData = TransactionService.processTransaction(
-            transactionParams = transactionParams
-        ).getTransactionAuthorization();
+        try {
+            rc.authorizationData = TransactionService
+                .processTransaction(transactionParams = transactionParams)
+                .getTransactionAuthorization();
 
-        rc.PaymentResultsStructObj = rc.authorizationData;
-        rc.structCCResponse = rc.PaymentResultsStructObj.result;
+            rc.PaymentResultsStructObj = rc.authorizationData;
+            rc.structCCResponse = rc.PaymentResultsStructObj.result;
 
-        rc.ccType = obj_shift4Factory.getCCCode4DBById(session.OPPaymentInfo.CardType, qry_cctypes);
+            rc.ccType = obj_shift4Factory.getCCCode4DBById(session.OPPaymentInfo.CardType, qry_cctypes);
 
-        isTransactionApproved = rc.structCCResponse.transaction.approved;
-        if (isTransactionApproved) {
-            v_new_token_string = '#rc.structCCResponse.transaction.token#'
-            v_cc_transaction_id = '#rc.structCCResponse.transaction.orderNumber#'
-            v_processor = '#rc.structCCResponse.transaction.gateway#'
-            AuthorizationCode = rc.structCCResponse.transaction.authCode ?: '';
+            isTransactionApproved = rc.structCCResponse.transaction.approved;
+            if (isTransactionApproved) {
+                v_new_token_string = '#rc.structCCResponse.transaction.token#'
+                v_cc_transaction_id = '#rc.structCCResponse.transaction.orderNumber#'
+                v_processor = '#rc.structCCResponse.transaction.gateway#'
+                AuthorizationCode = rc.structCCResponse.transaction.authCode ?: '';
 
 
-            transactionStruct = {
-                ccType: rc.ccType,
-                ccName: session.OPPaymentInfo.CCFirstName & " " & session.OPPaymentInfo.CCLastName,
-                exp_date: exp_date,
-                SandalsBookingNumber: rc.SandalsBookingNumber,
-                PaymentAmount: rc.PaymentAmount,
-                AuthorizationCode: AuthorizationCode,
-                SandalsBookingNumber2: rc.SandalsBookingNumber,
-                newTokenString: v_new_token_string,
-                processor: uCase(v_processor),
-                ccTransactionId: v_cc_transaction_id,
-                ccAddress: session.OPPaymentInfo.CCAddress,
-                blankField: "",
-                ccCity: session.OPPaymentInfo.CCCity,
-                ccState: session.OPPaymentInfo.CCState,
-                ccCountry: session.OPPaymentInfo.CCCountry,
-                ccZipCode: session.OPPaymentInfo.CCZipCode,
-                Email: rc.Email
-            };
+                transactionStruct = {
+                    ccType: rc.ccType,
+                    ccName: session.OPPaymentInfo.CCFirstName & ' ' & session.OPPaymentInfo.CCLastName,
+                    exp_date: exp_date,
+                    SandalsBookingNumber: rc.SandalsBookingNumber,
+                    PaymentAmount: rc.PaymentAmount,
+                    AuthorizationCode: AuthorizationCode,
+                    SandalsBookingNumber2: rc.SandalsBookingNumber,
+                    newTokenString: v_new_token_string,
+                    processor: uCase(v_processor),
+                    ccTransactionId: v_cc_transaction_id,
+                    ccAddress: session.OPPaymentInfo.CCAddress,
+                    blankField: '',
+                    ccCity: session.OPPaymentInfo.CCCity,
+                    ccState: session.OPPaymentInfo.CCState,
+                    ccCountry: session.OPPaymentInfo.CCCountry,
+                    ccZipCode: session.OPPaymentInfo.CCZipCode,
+                    Email: rc.Email
+                };
 
-             commentStruct = {
-                SandalsBookingNumber: rc.SandalsBookingNumber,
-                commentText: "Type:#rc.PaymentType# comment:#rc.comment#",
-                source: "WEBGOLD",
-                emptyString: ""
-            };
+                commentStruct = {
+                    SandalsBookingNumber: rc.SandalsBookingNumber,
+                    commentText: 'Type:#rc.PaymentType# comment:#rc.comment#',
+                    source: 'WEBGOLD',
+                    emptyString: ''
+                };
 
-            transactionSucceed = PostCCTransactionService.processPostCCTransaction(
-                transactionParams = transactionStruct,
-                commentStruct = commentStruct
-            );
-
-            po_sucess_val = transactionSucceed.getPoSucessVal();
-            po_msg = transactionSucceed.getPoMsg();
-            isTransactionSucceed = transactionSucceed.getSuccess();
-
-            if(isTransactionSucceed) {
-                  writeLog(
-                    type = 'information',
-                    file = 'PostCC_transaction',
-                    text = 'insert_reservation_comment: booking=''#rc.SandalsBookingNumber# Type:#rc.PaymentType# comment:#rc.comment# po_sucess_val:#po_sucess_val# po_msg:#po_msg#'''
+                transactionSucceed = PostCCTransactionService.processPostCCTransaction(
+                    transactionParams = transactionStruct,
+                    commentStruct = commentStruct
                 );
+
+                po_sucess_val = transactionSucceed.getPoSucessVal();
+                po_msg = transactionSucceed.getPoMsg();
+                isTransactionSucceed = transactionSucceed.getSuccess();
+
+                emailsNotifications = 'weddinggroups@uvltd.com,socialgroups@uvltd.com,incentivegroups@uvltd.com,anneth.zavala@sanservices.hn';
+
+                inetOBJ = createObject('java', 'java.net.InetAddress');
+                inetOBJ = inetOBJ.getLocalHost();
+                host = inetOBJ.getHostName();
+                if (isTransactionSucceed) {
+                    writeLog(
+                        type = 'information',
+                        file = 'PostCC_transaction',
+                        text = 'insert_reservation_comment: booking=''#rc.SandalsBookingNumber# Type:#rc.PaymentType# comment:#rc.comment# po_sucess_val:#po_sucess_val# po_msg:#po_msg#'''
+                    );
+
+                    EmailService.sendEmail(form, emailsNotifications, host);
+                }
             }
-
-          
+        } 
+        catch (any e) {
+            rc.errorMessage = 'An error occurred while processing the transaction: ' & e.message;
+            EmailService.sendTransactionErrorEmail(form, host, e);
+            return;
         }
-
     }
 
     function processPayment(rc) {
@@ -306,8 +318,6 @@ component accessors="true" {
             month: Form.Month,
             year: Form.year
         };
-
-    
     }
 
     private function validateCreditCardType(ccnumber = '', cctype = '', cccvv = '') {
