@@ -32,7 +32,7 @@ component extends="framework.one" {
         jsonPrettyPrint: true,
         reloadApplicationOnEveryRequest: true,
         diEngine: 'di1',
-        diLocations: '/model/services,/model/utils,/model/beans,/model/interfaces,/model/providers,/model/bookings,/model/payments,/controllers'
+        diLocations: '/model/services,/model/utils,/model/interfaces,/model/providers,/model/bookings,/model/payments,/controllers'
 
     };
 
