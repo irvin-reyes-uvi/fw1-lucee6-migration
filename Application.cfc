@@ -16,7 +16,7 @@ component extends="framework.one" {
         expandPath('/views/includes/custom_tags/beaches'),
         expandPath('/views/includes/custom_tags/general')
     ];
-
+    //from
     variables.framework = {
         usingSubsystems: false,
         action: 'go',
