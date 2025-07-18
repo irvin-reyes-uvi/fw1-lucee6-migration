@@ -7,10 +7,6 @@ isCCShift4Now = application.isDev;
 
 isTest = application.isDev;
 
-inetOBJ = createObject('java', 'java.net.InetAddress');
-inetOBJ = inetOBJ.getLocalHost();
-LocalHostName = inetOBJ.getHostName();
-
 v_new_token_string = '';
 v_new_response_code = '';
 v_new_shift4_error = '';
