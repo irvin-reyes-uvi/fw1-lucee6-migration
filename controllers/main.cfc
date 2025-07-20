@@ -126,7 +126,7 @@ component accessors="true" {
         }
 
         rc.structBookingInfo = structBookingInfo;
-        //rc.qryCategoryRoomInfo = ResortQueryService.getRoomCategoryInfo(rc.structBookingInfo.BookingInfo);
+
         isVerified = rc.structBookingInfo.status == 'True';
         if (isVerified) {
             session.OPPaymentInfo = {
@@ -144,10 +144,6 @@ component accessors="true" {
             rc.Resorts = Resorts;
         }
     }
-
-    public void function test(rc) {
-    }
-
 
     public void function error(rc) {
         rc.title = 'An error occurred';
