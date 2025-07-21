@@ -584,12 +584,15 @@
 			
 		<cfelse>
 			<!--- Get QofQ --->
-			<cfquery name="rtnStruct.results" dbtype="query">
-			select *
-			from this.qRoomCategories
-			where rst_code = '#arguments.resort_code#' and
-				  category_code = '#arguments.category_code#'                   
-			</cfquery>
+			<cfset rtnStruct.results = queryExecute(
+				"SELECT * FROM this.qRoomCategories WHERE rst_code = :resortCode AND category_code = :categoryCode",
+				{
+						resortCode = {value=arguments.resort_code, cfsqltype="cf_sql_varchar"},
+						categoryCode = {value=arguments.category_code, cfsqltype="cf_sql_varchar"}
+				},
+				{dbtype="query"}
+		)>
+
 		</cfif>
 				
 		<!--- set error free --->

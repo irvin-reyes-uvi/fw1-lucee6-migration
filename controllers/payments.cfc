@@ -7,7 +7,7 @@ component accessors="true" {
     property TransactionService;
     property PostCCTransactionService;
     property EmailService;
-    
+
     public any function init(fw) {
         variables.fw = fw;
         return this;
@@ -47,11 +47,73 @@ component accessors="true" {
         rc.PaymentType = rc.PaymentType ?: '';
         rc.comment = rc.comment ?: '';
 
-        rc.Resorts = ResortQueryService.getAllResorts();
-        rc.Countries = PaymentService.getCountries();
+        error_test_handler = new model.utils.ErrorNTestHandler().initurl(url);
+        // rc.Resorts = getResortQueryService().getAllResorts();
+        // rc.Countries = getPaymentService().getCountries();
 
-        rc.NewInvoiceID = InvoiceService.getNewInvoiceId().getNewInvoiceNumber();
-        rc.qryAssignment = BookingService.getBookingDetails(rc.SandalsBookingNumber);
+        rc.isPaymentSuccessMessageNotDefined = not isDefined('Client.PaymentSuccessMessage');
+        if (rc.isPaymentSuccessMessageNotDefined) {
+            client.PaymentSuccessMessage = '';
+        }
+
+        rc.isPaymentSucessMessageNotEmpty = trim(Client.PaymentSuccessMessage) IS NOT '';
+        try {
+            rc.structCardInfo = {}
+
+            rc.isMonthNotDefined = not isDefined('session.OPPaymentInfo.month');
+            if (rc.isMonthNotDefined) {
+                cfdump(var = session.OPPaymentInfo, label = "inside month validation", abort = true);
+                variables.fw.redirect(action = 'main.default', queryString = 'msg=503');
+            }
+
+            rc.NewInvoiceID = getInvoiceService().getNewInvoiceId();
+            rc.DAYPART = dateFormat(now(), 'DDMMYY')
+            rc.INVOICE = rc.DAYPART & rc.NewInvoiceID
+
+
+
+            writeLog(
+                type = 'information',
+                file = 'OnlinePaymentLog',
+                text = 'booking=''#rc.SandalsBookingNumber#''  Info=''Called obe_pack.get_invoice_id, NewInvoiceID:#rc.NewInvoiceID#--INVOICE:#rc.INVOICE#'' CardNumber=''#session.OPPaymentInfo.CreditCard#'' amount=''#rc.PaymentAmount#'''
+            );
+
+            rc.ccAuthorizationStruct = {};
+        } catch (any ex) {
+            error_test_handler.reportError(
+                ex,
+                error_test_handler.GETTING_INVOICE,
+                'getting new invoice number, booking number:#rc.sandalsBookingNumber#'
+            )
+        }
+
+        rc.qryAssignment = getBookingService().getBookingDetails(rc.SandalsBookingNumber);
+        rc.isBookingNumberNotDefined = not isDefined('rc.SandalsBookingNumber');
+
+
+        rc.isBookingDetailsEmpty = (rc.qryAssignment.book_no IS '0') OR (rc.qryAssignment.resv_no IS '0');
+
+        try {
+            if (rc.isBookingDetailsEmpty) {
+                throw(
+                    message = 'No RSV side record was found for the booking ''#form.sandalsbookingnumber#''. Process is stopped in order to prevent credit card charging.'
+                );
+                return;
+            }
+
+            writeLog(
+                type = 'information',
+                file = 'OnlinePaymentLogByTest',
+                text = 'booking=''#rc.SandalsBookingNumber#''  Info=''No reservation info found'' CardNumber=''#session.OPPaymentInfo.CreditCard#'' amount=''#rc.PaymentAmount#'''
+            );
+        } catch (any ex) {
+            error_test_handler.reportError(
+                ex,
+                error_test_handler.GETTING_INVOICE,
+                'getting booking #rc.sandalsbookingnumber# details'
+            )
+        }
+
 
         obj_shift4Factory = createObject('component', 'model.utils.Shift4Factory');
 
@@ -83,22 +145,118 @@ component accessors="true" {
         };
 
         try {
-            rc.authorizationData = TransactionService
-                .processTransaction(transactionParams = transactionParams)
-                .getTransactionAuthorization();
+            rc.authorizationData = getTransactionService().processTransaction(transactionParams = transactionParams);
+
+            try {
+                rc.isCCSystemv2 = true;
+                if (rc.isCCSystemv2) {
+                    ccAuthorizationStruct = {}
+                    writeLog(
+                        type = 'information',
+                        file = 'OnlinePaymentLogByTest',
+                        text = 'cc_transaction=''CCSystemV2''  isCCSystemv2=''#rc.isCCSystemv2#'' booking=''#form.sandalsbookingnumber#''  Info=''Real CC, Call WS processTransaction'' CardNumber=''#session.OPPaymentInfo.CreditCard#'' amount=''#form.paymentamount#'''
+                    )
+                }
+
+                ccAuthorizationStruct = rc.authorizationData
+            } catch (any ex) {
+                error_test_handler.reportError(
+                    ex,
+                    error_test_handler.CHARGING_CC,
+                    'making CC transaction:  #session.OPPaymentInfo.CCFirstName#--#session.OPPaymentInfo.CCLastName#--#form.sandalsBookingNumber#--#form.paymentAmount#'
+                )
+            }
+
 
             rc.PaymentResultsStructObj = rc.authorizationData;
             rc.structCCResponse = rc.PaymentResultsStructObj.result;
 
-            rc.ccType = obj_shift4Factory.getCCCode4DBById(session.OPPaymentInfo.CardType, qry_cctypes);
+            rc.structCardInfo.BookingNumber = '#form.sandalsbookingnumber#'
+            rc.structCardInfo.Email = '#form.email#'
+            rc.structCardInfo.Amount = form.paymentAmount
+            rc.structCardInfo.Message = ''
+            rc.structCardInfo.AuthorizationCode = ''
+            rc.structCardInfo.Approved = 'False'
+
+
+            try {
+                if (rc.isCCSystemv2) {
+                    hasErrorFlag = structKeyExists(rc.PaymentResultsStructObj.result.error, 'code');
+                    if (hasErrorFlag) {
+                        writeLog(
+                            type = 'information',
+                            file = 'OnlinePaymentLogByTest',
+                            text = 'booking=''#form.sandalsbookingnumber#''  Info=''CCsystemV2, error in rc.PaymentResultsStructObj.result.error--#hasErrorFlag#'' amount=''#form.paymentamount#'''
+                        )
+                        rc.structCardInfo.Message = 'There was a problem processing your credit card; please try again'
+                        rc.structCardInfo.AuthorizationCode = ''
+                        rc.structCardInfo.Approved = 'False'
+
+                        writeLog(
+                            type = 'information',
+                            file = 'PostCC_transaction',
+                            text = 'status=''FAILED'' booking=''#form.sandalsbookingnumber#'' Info=''GOP CCsystemV2, error in rc.PaymentResultsStructObj.result.error--#hasErrorFlag#, errorMessage=#rc.PaymentResultsStructObj.result.error#'' amount=''#form.paymentamount#'' REMOTE_ADDR=''#CGI.REMOTE_ADDR#'' USER_AGENT=''#CGI.HTTP_USER_AGENT#'''
+                        )
+                    }
+                }
+            } catch (any ex) {
+                writeLog(
+                    type = 'information',
+                    file = 'PostCC_transaction',
+                    text = 'status=''FAILED'' booking=''#form.sandalsbookingnumber#'' Info=''GOP CCsystemV2 Transacction Failed'' amount=''#form.paymentamount#'' REMOTE_ADDR=''#CGI.REMOTE_ADDR#'' USER_AGENT=''#CGI.HTTP_USER_AGENT#'''
+                );
+                error_test_handler.reportError(
+                    ex,
+                    error_test_handler.READING_CC_CHARGEINFO,
+                    'reading CC transaction info:  #session.OPPaymentInfo.CCFirstName#--#session.OPPaymentInfo.CCLastName#--#form.sandalsBookingNumber#--#form.paymentAmount#'
+                )
+            }
+
+
+            writeLog(
+                type = 'information',
+                file = 'OnlinePaymentLogByTest',
+                text = 'booking=''#form.sandalsbookingnumber#''  Info=''CCsystemV2, rc.PaymentResultsStructObj.result.error--#hasErrorFlag#,OK''  amount=''#form.paymentamount#'''
+            )
+
+
 
             isTransactionApproved = rc.structCCResponse.transaction.approved;
             if (isTransactionApproved) {
-                v_new_token_string = '#rc.structCCResponse.transaction.token#'
-                v_cc_transaction_id = '#rc.structCCResponse.transaction.orderNumber#'
-                v_processor = '#rc.structCCResponse.transaction.gateway#'
                 AuthorizationCode = rc.structCCResponse.transaction.authCode ?: '';
+                v_new_token_string = '#rc.structCCResponse.transaction.token#'
+                v_new_response_code = '#rc.structCCResponse.transaction.responseCode#'
+                v_cc_transaction_id = '#rc.structCCResponse.transaction.orderNumber#'
+                v_processor = '#rc.structCCResponse.transaction.gateway#';
 
+                writeLog(
+                    type = 'information',
+                    file = 'OnlinePaymentLogByTest',
+                    text = 'booking=''#form.sandalsbookingnumber#''  Info=''CCsystemV2, Approved!--#rc.structCCResponse.success#--#rc.structCCResponse.transaction.authCode#''  amount=''#form.paymentamount#'''
+                );
+
+                rc.structCardInfo.Message = 'Credit Card transaction was approved'
+                rc.structCardInfo.Approved = 'True'
+                writeLog(
+                    type = 'information',
+                    file = 'PostCC_transaction',
+                    text = 'status=''PASSED'' CCRESPONSE=''#v_new_response_code#'' booking=''#form.sandalsbookingnumber#'' Info=''GOP CCsystemV2 Transacction Approved'' amount=''#form.paymentamount#'' transacctionid=''#v_cc_transaction_id#'' processor=''#v_processor#'' REMOTE_ADDR=''#CGI.REMOTE_ADDR#'' USER_AGENT=''#CGI.HTTP_USER_AGENT#'''
+                )
+
+                if (rc.structCardInfo.Approved) {
+                    rc.ccType = obj_shift4Factory.getCCCode4DBById(session.OPPaymentInfo.CardType, qry_cctypes);
+                    writeLog(
+                        type = 'information',
+                        file = 'OnlinePaymentLogByTest',
+                        text = 'booking=''#form.sandalsbookingnumber#''  Info=''Call INSERT_CREDIT_CARD'' CardNumber=''#session.OPPaymentInfo.CreditCard#'' amount=''#form.paymentamount#'''
+                    );
+
+                    writeLog(
+                        type = 'information',
+                        file = 'OnlinePaymentLogByTest',
+                        text = 'booking=''#form.sandalsbookingnumber#''  Info=''Call INSERT_CREDIT_CARD....done'' CardNumber=''#session.OPPaymentInfo.CreditCard#'' amount=''#form.paymentamount#'''
+                    );
+                }
 
                 transactionStruct = {
                     ccType: rc.ccType,
@@ -127,14 +285,15 @@ component accessors="true" {
                     emptyString: ''
                 };
 
-                transactionSucceed = PostCCTransactionService.processPostCCTransaction(
+                transactionSucceed = getPostCCTransactionService().processPostCCTransaction(
                     transactionParams = transactionStruct,
                     commentStruct = commentStruct
                 );
 
-                po_sucess_val = transactionSucceed.getPoSucessVal();
-                po_msg = transactionSucceed.getPoMsg();
-                isTransactionSucceed = transactionSucceed.getSuccess();
+
+                po_sucess_val = transactionSucceed.po_sucess_val
+                po_msg = transactionSucceed.po_msg;
+                isTransactionSucceed = transactionSucceed.success;
 
                 emailsNotifications = 'weddinggroups@uvltd.com,socialgroups@uvltd.com,incentivegroups@uvltd.com,anneth.zavala@sanservices.hn';
 
@@ -142,6 +301,15 @@ component accessors="true" {
                 inetOBJ = inetOBJ.getLocalHost();
                 host = inetOBJ.getHostName();
                 if (isTransactionSucceed) {
+                    Client.currentBookingNumber = form.sandalsbookingnumber
+                    Client.currentCCNumber = session.OPPaymentInfo.CreditCard
+                    Client.remainingBalance = form.balance - form.PaymentAmount
+
+                    writeLog(
+                        type = 'information',
+                        file = 'OnlinePaymentLogByTest',
+                        text = 'booking=''#form.sandalsbookingnumber#'' Info=''Before going to the last page, remainig balance is:#Client.remainingBalance#''  paying_amount=''#form.paymentamount#'' balance=''#form.balance#'''
+                    );
                     writeLog(
                         type = 'information',
                         file = 'PostCC_transaction',
@@ -150,12 +318,45 @@ component accessors="true" {
 
                     EmailService.sendEmail(form, emailsNotifications, host);
                 }
+            } else {
+                writeLog(
+                    type = 'information',
+                    file = 'OnlinePaymentLogByTest',
+                    text = 'booking=''#form.sandalsbookingnumber#''  Info=''CCsystemV2, Failed!--#rc.structCCResponse.success#--#structCardInfo.AuthorizationCode#'' CardNumber=''#session.OPPaymentInfo.CreditCard#'' amount=''#form.paymentamount#'''
+                );
+
+                rc.structCardInfo.Message = 'Your Credit Card has been declined'
+                rc.structCardInfo.AuthorizationCode = ''
+                rc.structCardInfo.Approved = 'False'
+
+                writeLog(
+                    type = 'information',
+                    file = 'PostCC_transaction',
+                    text = 'status=''FAILED'' CCRESPONSE=''#v_new_response_code#'' booking=''#form.sandalsbookingnumber#'' Info=''GOP CCsystemV2 Transacction Was Not Approved'' amount=''#form.paymentamount#'' transacctionid=''#v_cc_transaction_id#'' processor=''#v_processor#'' REMOTE_ADDR=''#CGI.REMOTE_ADDR#'' USER_AGENT=''#CGI.HTTP_USER_AGENT#'''
+                );
             }
-        } 
-        catch (any e) {
+        } catch (any e) {
             rc.errorMessage = 'An error occurred while processing the transaction: ' & e.message;
             EmailService.sendTransactionErrorEmail(form, host, e);
-            return;
+
+            writeLog(
+                type = 'information',
+                file = 'OnlinePaymentErr',
+                text = 'status=''FAILED'' CCRESPONSE=''#v_new_response_code#'' booking=''#form.sandalsbookingnumber#'' Info=''GOP inserting CC transaction info to DB'' amount=''#form.paymentamount#'' transacctionid=''#v_cc_transaction_id#'' processor=''#v_processor#'' REMOTE_ADDR=''#CGI.REMOTE_ADDR#'' USER_AGENT=''#CGI.HTTP_USER_AGENT#'', ExcMessage: #cfcatch.message#, ExcDetail: #cfcatch.detail# '
+            );
+
+            error_test_handler.reportError(
+                cfcatch,
+                error_test_handler.INSERTING_DB_RECORDS,
+                'inserting CC transaction info to DB:  #rc.structCardInfo.AuthorizationCode#--#form.sandalsBookingNumber#--#form.paymentAmount#'
+            );
+
+
+            error_test_handler.reportError(
+                e,
+                error_test_handler.SENDING_EMAIL,
+                'sending out email:  #form.sandalsBookingNumber#--#form.paymentAmount#'
+            );
         }
     }
 
@@ -186,7 +387,7 @@ component accessors="true" {
         rc.EditPayment = rc.EditPayment ?: '';
         rc.ConfirmPayment = rc.ConfirmPayment ?: '';
 
-        rc.Resorts = ResortQueryService.getAllResorts();
+        rc.Resorts = getResortQueryService().getAllResorts();
 
 
         error_test_handler = createObject('component', 'model.utils.ErrorNTestHandler').initurl(url);
@@ -205,7 +406,7 @@ component accessors="true" {
         rc.structBookingInfo = {};
         var ErrorMessage = '';
         hasFormBooking = structKeyExists(form, 'BookingNumber');
-        paymentService = PaymentService.getPaymentWebService();
+        paymentService = getPaymentService().getPaymentWebService();
         if (hasFormBooking) {
             hasWTheBookingNumber = left(form.BookingNumber, 1) == 'W';
             if (hasWTheBookingNumber) {

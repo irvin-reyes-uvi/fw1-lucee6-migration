@@ -1,10 +1,12 @@
-component accessors="true"{
+component accessors="true" {
+
     property BookingDataProvider;
 
-    public model.bookings.dto.BookingDetailsDTO function getBookingDetails(required numeric bookingNumber){
+    public query function getBookingDetails(required numeric bookingNumber) {
+        
+        var qResult = getBookingDataProvider().getBookingDetails(sandalsBookingNumber = bookingNumber);
 
-        roomCategoryQueryHandler = new model.bookings.handlers.BookingQueryHandler(BookingDataProvider);
-        query = new model.bookings.queries.GetBookingDetailsQuery(bookingNumber);
-        return roomCategoryQueryHandler.handle(query);
+        return qResult;
     }
+
 }

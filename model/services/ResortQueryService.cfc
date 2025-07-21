@@ -3,15 +3,24 @@ component accessors="true" displayName="ResortQueryService" {
     property BookingDataProvider;
 
     public array function getAllResorts() {
-        resortQueryHandler = new model.bookings.handlers.ResortQueryHandler(BookingDataProvider);
-        query = new model.bookings.queries.ListResortsQuery();
-        return resortQueryHandler.handle(query);
+        
+        var qResult = getBookingDataProvider().getAllResorts();
+        
+        resortsArray = qResult.reduce((arr, row)=> {
+            arr.append(row);
+            return arr;
+        }, []);
+
+        resorts = resortsArray.map((item, rowNumber, recordSet) => {
+            return {
+                type = item.RESORT_TYPE,
+                name = item.RESORT_NAME,
+                code = item.RST_CODE
+            };
+        });
+
+        return resorts;
     }
 
-    public model.bookings.dto.RoomCategoryDTO function getRoomCategoryInfo(required struct bookingInfo) {
-        roomCategoryQueryHandler = new model.bookings.handlers.RoomCategoryQueryHandler(BookingDataProvider);
-        query = new model.bookings.queries.GetRoomCategoryQuery(bookingInfo.resort, bookingInfo.roomCategory);
-        return roomCategoryQueryHandler.handle(query);
-    }
 
 }

@@ -1,10 +1,13 @@
 component accessors="true"{
     property PaymentDataProvider;
 
-    public model.payments.dto.NewInvoiceNumberDTO function getNewInvoiceId() {
-        InvoiceQueryHandler = new model.payments.handlers.InvoiceQueryHandler(PaymentDataProvider);
-        query = new model.payments.queries.GetInvoiceIdQuery();
-        return InvoiceQueryHandler.handle(query);
+    public numeric function getNewInvoiceId() {
+        var qResult = getPaymentDataProvider().getNewInvoiceId();
+
+        if (isNull(qResult) || qResult <= 0) {
+            throw(new model.payments.exceptions.PaymentNotFoundException());
+        }
+        return qResult;
     }
 
 }

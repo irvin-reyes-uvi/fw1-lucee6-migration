@@ -9,7 +9,7 @@ component implements="model.interfaces.ICommandHandler" {
 
     public any function handle(required any command) {
         
-       obj_CCSystemv2 = createObject('component', 'model.utils.CCSystemv2');
+        obj_CCSystemv2 = createObject('component', 'model.utils.CCSystemv2');
         authorizationData = obj_CCSystemv2.doCCTransaction(argumentCollection = command.getTransactionParams());
         return authorizationData;
     }

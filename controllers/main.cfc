@@ -101,6 +101,8 @@ component accessors="true" {
         var structBookingInfo = {};
         hasWInIt = left(rc.BookingNumber, 1) == 'W';
         if (hasWInIt) {
+
+            /*
             var verifiedBooking = BookingsService.verifyBookingByConfirmation(rc.BookingNumber);
 
             if (verifiedBooking) {
@@ -111,6 +113,8 @@ component accessors="true" {
                 // variables.fw.renderView(view = 'main/default');
                 return;
             }
+
+            */
         }
 
         isNotEmailRemainder = compareNoCase(rc.PaymentReason, 'EmailReminder') == 0;
