@@ -48,7 +48,8 @@
 					 		"securityCode":"#arguments.p_Cvv2Cod#",
 					 		"expirationDate":"#NumberFormat(arguments.p_ExpirationMonth,'00')##Right(arguments.p_ExpirationYear,2)#"
 					 	 }
-					 }'/>
+			}'/>
+			
 			<cfhttp method="POST" charset="utf-8" url="#wsCCSystemURL#" result="cardTokReq" timeout="60">
 				<cfhttpparam type="header" name="Content-Type" value="application/json" />
 				<cfhttpparam type="header" name="api-key" value="C3B4E569-9FC1-4AB6-AE9FBC893C20DF49" />

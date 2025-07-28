@@ -8,6 +8,8 @@ component accessors="true" {
     property PostCCTransactionService;
     property EmailService;
 
+    property obe_general;
+
     public any function init(fw) {
         variables.fw = fw;
         return this;
@@ -48,8 +50,6 @@ component accessors="true" {
         rc.comment = rc.comment ?: '';
 
         error_test_handler = new model.utils.ErrorNTestHandler().initurl(url);
-        // rc.Resorts = getResortQueryService().getAllResorts();
-        // rc.Countries = getPaymentService().getCountries();
 
         rc.isPaymentSuccessMessageNotDefined = not isDefined('Client.PaymentSuccessMessage');
         if (rc.isPaymentSuccessMessageNotDefined) {
@@ -360,6 +360,17 @@ component accessors="true" {
         }
     }
 
+    function test(rc) {
+        rc.title = 'Test Page';
+        rc.message = 'This is a test page.';
+
+         //rc.paymentService = getPaymentService().getPaymentWebService();
+         //rc.generalWebService = getPaymentService().getGeneralWebService();
+         rc.obeGeneral = getObe_general();
+         rc.result = rc.obeGeneral.fncGetObeSetup().results;
+   
+    }
+
     function processPayment(rc) {
         rc.SandalsBookingNumber = rc.SandalsBookingNumber ?: '';
         rc.MinPayment = rc.MinPayment ?: '';
@@ -443,7 +454,7 @@ component accessors="true" {
             );
         }
 
-        hasTranId = structKeyExists(client, 'tran_id');
+        /*hasTranId = structKeyExists(client, 'tran_id');
         tranIdLen = hasTranId ? len(client.tran_id) : 0;
         hasTranIdValue = hasTranId && tranIdLen > 0;
         if (hasTranIdValue) {
@@ -459,7 +470,7 @@ component accessors="true" {
                 CheckinDt = eteQry.check_in_date;
             }
             client.tran_id = '';
-        }
+        }*/
 
         var isValidCCType = validateCreditCardType(
             ccnumber = form.creditcard,

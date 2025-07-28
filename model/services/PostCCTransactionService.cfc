@@ -7,8 +7,8 @@ component accessors="true" displayName="TransactionService" {
         required struct commentStruct
     ) {
 
-         PaymentDataProvider.insertCreditCard(transactionParams);
-        commandExecutionResult = PaymentDataProvider.insertReservationComment(commentStruct);
+         getPaymentDataProvider().insertCreditCard(transactionParams);
+        commandExecutionResult = getPaymentDataProvider().insertReservationComment(commentStruct);
         return commandExecutionResult;
     }
 

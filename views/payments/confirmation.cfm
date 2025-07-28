@@ -1,11 +1,4 @@
-<cf_expire_page>
-
 <cfscript>
-error_test_handler = new model.utils.ErrorNTestHandler().initurl(url);
-
-isCCShift4Now = application.isDev;
-
-isTest = application.isDev;
 
 v_new_token_string = '';
 v_new_response_code = '';

@@ -30,7 +30,7 @@ component accessors="true" {
         rc.Resorts = ResortQueryService.getAllResorts();
         
 
-        var hasTranId = structKeyExists(client, 'tran_id') && len(client.tran_id) > 0;
+        /*var hasTranId = structKeyExists(client, 'tran_id') && len(client.tran_id) > 0;
         if (hasTranId) {
             var eteDetails = EteService.getBookingDetailsByTranID(client.tran_id);
             if (isStruct(eteDetails)) {
@@ -41,7 +41,7 @@ component accessors="true" {
                 rc.CheckInDt = eteDetails.CheckInDt;
             }
             client.tran_id = '';
-        }
+        }*/
 
         hasExceedTriesNumber = client.FailedBookFindTries > 3 && dateCompare(
             dateFormat(now(), 'MM/DD/YYYY'),
@@ -90,9 +90,9 @@ component accessors="true" {
         if (!len(rc.ResortCode)) rc.ErrorMessage &= ' Resort selection is required.';
         if (!len(rc.CheckInDt)) rc.ErrorMessage &= ' Check-in date is required.';
 
-        Resorts = ResortQueryService.getAllResorts();
+        Resorts = getResortQueryService().getAllResorts();
         rc.Resorts = Resorts;
-        rc.qryCountries = PaymentService.getCountries();
+        rc.qryCountries = getPaymentService().getCountries();
         if (len(rc.ErrorMessage)) {
             rc.Resorts = Resorts;
             return;
@@ -119,9 +119,9 @@ component accessors="true" {
 
         isNotEmailRemainder = compareNoCase(rc.PaymentReason, 'EmailReminder') == 0;
         if (isNotEmailRemainder) {
-            structBookingInfo = PaymentService.verifyBookingFromWebService(rc.Email, rc.BookingNumber);
+            structBookingInfo = getPaymentService().verifyBookingFromWebService(rc.Email, rc.BookingNumber);
         } else {
-            structBookingInfo = PaymentService.checkGroupBookingFromWebService(
+            structBookingInfo = getPaymentService().checkGroupBookingFromWebService(
                 rc.BookingNumber,
                 rc.GroupName,
                 rc.CheckInDt,

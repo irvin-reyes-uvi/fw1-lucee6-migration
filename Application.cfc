@@ -28,7 +28,7 @@ component extends="framework.one" {
         SESOmitIndex: true,
         routesCaseSensitive: false,
         viewsFolder: 'views',
-        trace: true,
+        trace: false,
         jsonPrettyPrint: true,
         reloadApplicationOnEveryRequest: true,
         diEngine: 'di1',
