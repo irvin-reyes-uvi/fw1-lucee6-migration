@@ -115,8 +115,7 @@ component accessors="true" {
         }
 
 
-        obj_shift4Factory = createObject('component', 'model.utils.Shift4Factory');
-
+        obj_shift4Factory = new model.utils.Shift4Factory();
         qry_cctypes = obj_shift4Factory.getCCTypes();
         cc_type_code = obj_shift4Factory.getCCCodeById(session.OPPaymentInfo.CardType, qry_cctypes);
 
@@ -360,17 +359,6 @@ component accessors="true" {
         }
     }
 
-    function test(rc) {
-        rc.title = 'Test Page';
-        rc.message = 'This is a test page.';
-
-         //rc.paymentService = getPaymentService().getPaymentWebService();
-         //rc.generalWebService = getPaymentService().getGeneralWebService();
-         rc.obeGeneral = getObe_general();
-         rc.result = rc.obeGeneral.fncGetObeSetup().results;
-   
-    }
-
     function processPayment(rc) {
         rc.SandalsBookingNumber = rc.SandalsBookingNumber ?: '';
         rc.MinPayment = rc.MinPayment ?: '';
@@ -401,13 +389,8 @@ component accessors="true" {
         rc.Resorts = getResortQueryService().getAllResorts();
 
 
-        error_test_handler = createObject('component', 'model.utils.ErrorNTestHandler').initurl(url);
-        obj_shift4Factory = createObject('component', 'model.utils.Shift4Factory');
-
-        obj_shift4 = obj_shift4Factory.getShift4Processor(
-            p_isOnDev = error_test_handler.isOnDev(),
-            p_app_name = 'ONLINE_PAYMENT'
-        );
+        error_test_handler = new model.utils.ErrorNTestHandler().initurl(url);
+        obj_shift4Factory = new model.utils.Shift4Factory();
 
         rc.qry_cctypes = obj_shift4Factory.getCCTypes();
 
@@ -560,6 +543,16 @@ component accessors="true" {
 
         output.success = true;
         return output;
+    }
+
+    function test(rc) {
+        rc.title = 'Test Page';
+        rc.message = 'This is a test page.';
+
+        // rc.paymentService = getPaymentService().getPaymentWebService();
+        // rc.generalWebService = getPaymentService().getGeneralWebService();
+        rc.obeGeneral = getObe_general();
+        rc.result = rc.obeGeneral.fncGetObeSetup().results;
     }
 
 }

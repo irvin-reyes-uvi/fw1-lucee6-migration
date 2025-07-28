@@ -11,10 +11,10 @@ component extends="framework.one" {
     };
 
     this.customtagpaths = [
-        expandPath('/views/includes/custom_tags'),
-        expandPath('/views/includes/custom_tags/sandals'),
-        expandPath('/views/includes/custom_tags/beaches'),
-        expandPath('/views/includes/custom_tags/general')
+        expandPath('/views/includes/custom_tags')
+        //expandPath('/views/includes/custom_tags/sandals'),
+        //expandPath('/views/includes/custom_tags/beaches'),
+        //expandPath('/views/includes/custom_tags/general')
     ];
     //from
     variables.framework = {
@@ -32,7 +32,7 @@ component extends="framework.one" {
         jsonPrettyPrint: true,
         reloadApplicationOnEveryRequest: true,
         diEngine: 'di1',
-        diLocations: '/model/services,/model/utils,/model/interfaces,/model/providers,/model/bookings,/model/payments,/controllers'
+        diLocations: '/model/services,/model/utils,/model/providers,/controllers'
 
     };
 

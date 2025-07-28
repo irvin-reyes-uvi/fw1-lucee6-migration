@@ -4,7 +4,7 @@ component
     accessors="true"
 {
 
-    this.DS_reseng = 'reseng';
+    
     variables.stop_at_exception = false;
     variables.qry_shift4_settings = queryNew('');
     variables.qry_shift4_ccards = queryNew('');
@@ -13,6 +13,10 @@ component
 
     function init(p_cfid) {
         variables.cfid = p_cfid;
+        return this;
+    }
+
+    function init(){
         return this;
     }
 
@@ -31,14 +35,14 @@ component
         if (arguments.p_isOnDev) v_app_type = 'DEV';
 
         // Async query execution
-        var futureQry = runAsync(function() {
+        var getSettingsByAppAndTypeName = runAsync(() => {
             return queryExecute(
                 'SELECT * FROM qry_allShift4settings WHERE app_name = ? AND app_type = ?',
                 [{value: v_app_name, cfsqltype: 'cf_sql_varchar'}, {value: v_app_type, cfsqltype: 'cf_sql_varchar'}],
                 {dbtype: 'query'}
             );
         });
-        qry = futureQry.get();
+        qry = getSettingsByAppAndTypeName.get();
 
         if (qry.recordCount == 0) {
             logInfoError(
@@ -48,14 +52,14 @@ component
                     CGI
                 ) & ''''
             );
-            var futureQryOther = runAsync(function() {
+            var allShift4Settings = runAsync(() =>{
                 return queryExecute(
                     'SELECT * FROM qry_allShift4settings WHERE app_name = ''OTHER'' AND app_type = ?',
                     [{value: v_app_type, cfsqltype: 'cf_sql_varchar'}],
                     {dbtype: 'query'}
                 );
             });
-            qry = futureQryOther.get();
+            qry = allShift4Settings.get();
         }
         return qry;
     }
@@ -77,14 +81,6 @@ component
         return v_shift4Obj;
     }
 
-    public any function getShift4ProcessorByCC(
-        required boolean p_isOnDev,
-        required string p_app_name,
-        required string p_CC_number
-    ) {
-        variables.current_appname = arguments.p_app_name;
-        return getShift4Processor(p_isOnDev = arguments.p_isOnDev, p_app_name = arguments.p_app_name);
-    }
 
     public query function getCCTypes() {
         if (!isDefined('application.cc_operations.qry_CCTypes') || !isQuery(application.cc_operations.qry_CCTypes)) {
@@ -123,7 +119,7 @@ component
         if (arguments.p_type == 'email') {
             mail
                 from="info@sandals.com"
-                to="echou@sanservices.hn"
+                to="irvin.reyes@sanservices.hn"
                 type="html"
                 subject="Shift4 notification: Application '#variables.current_appname#'" {
                 writeOutput(arguments.p_text);
