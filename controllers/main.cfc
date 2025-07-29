@@ -4,6 +4,7 @@ component accessors="true" {
     property ErrorNTestHandler;
     property EteService;
     property ResortQueryService;
+    property CachedDataService;
 
 
     public any function init(fw) {
@@ -27,27 +28,13 @@ component accessors="true" {
         rc.ErrorMessage = rc.ErrorMessage ?: '';
         rc.MinPayment = rc.MinPayment ?: 5;
 
-        rc.Resorts = ResortQueryService.getAllResorts();
-        
-
-        /*var hasTranId = structKeyExists(client, 'tran_id') && len(client.tran_id) > 0;
-        if (hasTranId) {
-            var eteDetails = EteService.getBookingDetailsByTranID(client.tran_id);
-            if (isStruct(eteDetails)) {
-                rc.BookingNumber = eteDetails.BookingNumber;
-                rc.FirstName = eteDetails.FirstName;
-                rc.LastName = eteDetails.LastName;
-                rc.ResortCode = eteDetails.ResortCode;
-                rc.CheckInDt = eteDetails.CheckInDt;
-            }
-            client.tran_id = '';
-        }*/
-
+        rc.Resorts = getCachedDataService().getAllResorts();
+        rc.qryCountries = getCachedDataService().getCountries();
         hasExceedTriesNumber = client.FailedBookFindTries > 3 && dateCompare(
             dateFormat(now(), 'MM/DD/YYYY'),
             client.FailedBookFindDt
         ) == 0;
-        
+
         if (hasExceedTriesNumber) {
             rc.ErrorMessage = 'Sorry, but you have exceeded the number of tries to find your booking, you must wait 24 hours to try again.';
             return;
@@ -90,19 +77,19 @@ component accessors="true" {
         if (!len(rc.ResortCode)) rc.ErrorMessage &= ' Resort selection is required.';
         if (!len(rc.CheckInDt)) rc.ErrorMessage &= ' Check-in date is required.';
 
-        Resorts = getResortQueryService().getAllResorts();
+        Resorts = getCachedDataService().getAllResorts();
         rc.Resorts = Resorts;
-        rc.qryCountries = getPaymentService().getCountries();
+        rc.qryCountries = getCachedDataService().getCountries();
         if (len(rc.ErrorMessage)) {
             rc.Resorts = Resorts;
             return;
         }
 
         var structBookingInfo = {};
-        hasWInIt = left(rc.BookingNumber, 1) == 'W';
+        /*hasWInIt = left(rc.BookingNumber, 1) == 'W';
         if (hasWInIt) {
 
-            /*
+
             var verifiedBooking = BookingsService.verifyBookingByConfirmation(rc.BookingNumber);
 
             if (verifiedBooking) {
@@ -114,8 +101,8 @@ component accessors="true" {
                 return;
             }
 
-            */
-        }
+
+        }*/
 
         isNotEmailRemainder = compareNoCase(rc.PaymentReason, 'EmailReminder') == 0;
         if (isNotEmailRemainder) {

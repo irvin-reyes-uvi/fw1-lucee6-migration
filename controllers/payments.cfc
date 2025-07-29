@@ -1,14 +1,13 @@
 component accessors="true" {
 
-    property ResortQueryService;
     property PaymentService;
     property InvoiceService;
     property BookingService;
     property TransactionService;
     property PostCCTransactionService;
     property EmailService;
-
-    property obe_general;
+    property CachedDataService;
+    variables.emailsNotifications = 'weddinggroups@uvltd.com,socialgroups@uvltd.com,incentivegroups@uvltd.com,anneth.zavala@sanservices.hn';
 
     public any function init(fw) {
         variables.fw = fw;
@@ -78,7 +77,7 @@ component accessors="true" {
                 text = 'booking=''#rc.SandalsBookingNumber#''  Info=''Called obe_pack.get_invoice_id, NewInvoiceID:#rc.NewInvoiceID#--INVOICE:#rc.INVOICE#'' CardNumber=''#session.OPPaymentInfo.CreditCard#'' amount=''#rc.PaymentAmount#'''
             );
 
-            rc.ccAuthorizationStruct = {};
+            // rc.ccAuthorizationStruct = {};
         } catch (any ex) {
             error_test_handler.reportError(
                 ex,
@@ -116,7 +115,7 @@ component accessors="true" {
 
 
         obj_shift4Factory = new model.utils.Shift4Factory();
-        qry_cctypes = obj_shift4Factory.getCCTypes();
+        qry_cctypes = getCachedDataService().getCCTypes();
         cc_type_code = obj_shift4Factory.getCCCodeById(session.OPPaymentInfo.CardType, qry_cctypes);
 
         isCCStateNull = session.OPPaymentInfo.CCState is '';
@@ -149,15 +148,12 @@ component accessors="true" {
             try {
                 rc.isCCSystemv2 = true;
                 if (rc.isCCSystemv2) {
-                    ccAuthorizationStruct = {}
                     writeLog(
                         type = 'information',
                         file = 'OnlinePaymentLogByTest',
                         text = 'cc_transaction=''CCSystemV2''  isCCSystemv2=''#rc.isCCSystemv2#'' booking=''#form.sandalsbookingnumber#''  Info=''Real CC, Call WS processTransaction'' CardNumber=''#session.OPPaymentInfo.CreditCard#'' amount=''#form.paymentamount#'''
                     )
                 }
-
-                ccAuthorizationStruct = rc.authorizationData
             } catch (any ex) {
                 error_test_handler.reportError(
                     ex,
@@ -294,7 +290,7 @@ component accessors="true" {
                 po_msg = transactionSucceed.po_msg;
                 isTransactionSucceed = transactionSucceed.success;
 
-                emailsNotifications = 'weddinggroups@uvltd.com,socialgroups@uvltd.com,incentivegroups@uvltd.com,anneth.zavala@sanservices.hn';
+                emailsNotifications = variables.emailsNotifications ?: '';
 
                 inetOBJ = createObject('java', 'java.net.InetAddress');
                 inetOBJ = inetOBJ.getLocalHost();
@@ -386,13 +382,13 @@ component accessors="true" {
         rc.EditPayment = rc.EditPayment ?: '';
         rc.ConfirmPayment = rc.ConfirmPayment ?: '';
 
-        rc.Resorts = getResortQueryService().getAllResorts();
+        rc.Resorts = getCachedDataService().getAllResorts();
 
 
         error_test_handler = new model.utils.ErrorNTestHandler().initurl(url);
         obj_shift4Factory = new model.utils.Shift4Factory();
 
-        rc.qry_cctypes = obj_shift4Factory.getCCTypes();
+        rc.qry_cctypes = getCachedDataService().getCCTypes();
 
         ThisYear = year(now());
         ThisMonth = month(now());
@@ -405,11 +401,7 @@ component accessors="true" {
             hasWTheBookingNumber = left(form.BookingNumber, 1) == 'W';
             if (hasWTheBookingNumber) {
                 confirmation_no = form.BookingNumber;
-                qry = queryExecute(
-                    'SELECT * FROM RESERVATION WHERE EXTERNAL_REFERENCE1 = :confirmation_no',
-                    {confirmation_no: {value: confirmation_no, cfsqltype: 'cf_sql_varchar'}},
-                    {datasource: 'rsv'}
-                );
+                qry = getBookingService().validateReservation(confirmation_no = confirmation_no);
 
                 queryHasElements = qry.recordCount > 0;
                 if (queryHasElements) {
@@ -437,23 +429,6 @@ component accessors="true" {
             );
         }
 
-        /*hasTranId = structKeyExists(client, 'tran_id');
-        tranIdLen = hasTranId ? len(client.tran_id) : 0;
-        hasTranIdValue = hasTranId && tranIdLen > 0;
-        if (hasTranIdValue) {
-            eteObj = createObject('component', 'ete');
-            eteQry = eteObj.getBookingIdByTranID(client.tran_id);
-
-            areElementsInEteQuery = eteQry.recordCount > 0;
-            if (areElementsInEteQuery) {
-                BookingNumber = eteQry.booking_id;
-                FirstName = eteQry.first_name;
-                LastName = eteQry.last_name;
-                ResortCode = eteQry.resort_code;
-                CheckinDt = eteQry.check_in_date;
-            }
-            client.tran_id = '';
-        }*/
 
         var isValidCCType = validateCreditCardType(
             ccnumber = form.creditcard,
@@ -551,8 +526,10 @@ component accessors="true" {
 
         // rc.paymentService = getPaymentService().getPaymentWebService();
         // rc.generalWebService = getPaymentService().getGeneralWebService();
-        rc.obeGeneral = getObe_general();
-        rc.result = rc.obeGeneral.fncGetObeSetup().results;
+
+
+        rc.cachedService = getCachedDataService();
+        rc.result = rc.cachedService.getCountries();
     }
 
 }

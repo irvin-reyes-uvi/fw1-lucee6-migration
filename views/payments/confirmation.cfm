@@ -1,5 +1,4 @@
 <cfscript>
-
 v_new_token_string = '';
 v_new_response_code = '';
 v_new_shift4_error = '';

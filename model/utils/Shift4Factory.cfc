@@ -4,7 +4,6 @@ component
     accessors="true"
 {
 
-    
     variables.stop_at_exception = false;
     variables.qry_shift4_settings = queryNew('');
     variables.qry_shift4_ccards = queryNew('');
@@ -16,71 +15,9 @@ component
         return this;
     }
 
-    function init(){
+    function init() {
         return this;
     }
-
-    function setStopAtException(p_var) {
-        variables.stop_at_exception = p_var;
-    }
-
-    // --- Async-enabled Query Functions ---
-
-    private query function getOneShift4Setting(required boolean p_isOnDev, required string p_app_name) {
-        var qry_allShift4settings = getShift4Settings();
-        var v_app_type = 'PRODUCTION';
-        var v_app_name = uCase(trim(arguments.p_app_name));
-        var qry = queryNew('');
-        if (v_app_name == 'ONLINE_PAYMENT') v_app_name = 'OP';
-        if (arguments.p_isOnDev) v_app_type = 'DEV';
-
-        // Async query execution
-        var getSettingsByAppAndTypeName = runAsync(() => {
-            return queryExecute(
-                'SELECT * FROM qry_allShift4settings WHERE app_name = ? AND app_type = ?',
-                [{value: v_app_name, cfsqltype: 'cf_sql_varchar'}, {value: v_app_type, cfsqltype: 'cf_sql_varchar'}],
-                {dbtype: 'query'}
-            );
-        });
-        qry = getSettingsByAppAndTypeName.get();
-
-        if (qry.recordCount == 0) {
-            logInfoError(
-                p_type = 'database',
-                p_logtype = 'OTHER APP',
-                p_text = 'message= ''An unknown application name (' & arguments.p_app_name & ') was used, use OTHER instead...'' CGI=''' & serializeObject4Log(
-                    CGI
-                ) & ''''
-            );
-            var allShift4Settings = runAsync(() =>{
-                return queryExecute(
-                    'SELECT * FROM qry_allShift4settings WHERE app_name = ''OTHER'' AND app_type = ?',
-                    [{value: v_app_type, cfsqltype: 'cf_sql_varchar'}],
-                    {dbtype: 'query'}
-                );
-            });
-            qry = allShift4Settings.get();
-        }
-        return qry;
-    }
-
-    public any function getShift4Processor(required boolean p_isOnDev, required string p_app_name) {
-        variables.current_appname = arguments.p_app_name;
-        var qryOneSetting = getOneShift4Setting(arguments.p_isOnDev, arguments.p_app_name);
-        var v_shift4Obj = createObject("component", "model.utils.Shift4Factory").init(
-            p_isOnDev = arguments.p_isOnDev,
-            p_accountid = qryOneSetting.account_id,
-            p_siteid = qryOneSetting.site_id,
-            p_appid = qryOneSetting.app_id,
-            p_desc = qryOneSetting.description,
-            p_app_name = qryOneSetting.app_name,
-            p_token_url = qryOneSetting.token_str,
-            p_processing_url = qryOneSetting.processing_url,
-            p_cfid = variables.cfid
-        );
-        return v_shift4Obj;
-    }
-
 
     public query function getCCTypes() {
         if (!isDefined('application.cc_operations.qry_CCTypes') || !isQuery(application.cc_operations.qry_CCTypes)) {
@@ -94,39 +31,6 @@ component
             application.cc_operations.qry_CCTypes = futureQry.get();
         }
         return application.cc_operations.qry_CCTypes;
-    }
-
-    private query function getShift4Settings() {
-        if (
-            !isDefined('application.cc_operations.qry_Shift4AccountSettings') || !isQuery(
-                application.cc_operations.qry_Shift4AccountSettings
-            )
-        ) {
-            application.cc_operations.qry_Shift4AccountSettings = queryNew('');
-        }
-        if (application.cc_operations.qry_Shift4AccountSettings.recordCount == 0) {
-            // Async query execution
-            var futureQry = runAsync(function() {
-                return getShift4SettingsFromMysqlDB();
-            });
-            application.cc_operations.qry_Shift4AccountSettings = futureQry.get();
-        }
-        return application.cc_operations.qry_Shift4AccountSettings;
-    }
-
-    private void function logInfoError(required string p_type, required string p_logtype, required string p_text) {
-        var v_text_string = right(arguments.p_text, 2995);
-        if (arguments.p_type == 'email') {
-            mail
-                from="info@sandals.com"
-                to="irvin.reyes@sanservices.hn"
-                type="html"
-                subject="Shift4 notification: Application '#variables.current_appname#'" {
-                writeOutput(arguments.p_text);
-            }
-            return;
-        }
-        writeLog(type = 'Warning', file = 'Shift4_Err_Warning', text = v_text_string);
     }
 
     public string function getCCCodeById(required numeric p_typeid, required query p_qryCCtypes) {
@@ -153,11 +57,7 @@ component
         return 'VI/MC';
     }
 
-    // --- Data Population Functions ---
-
     private query function getShift4SettingsFromMysqlDB() {
-       
-
         var app_name_Values = [
             'OP',
             'OBE',
@@ -249,13 +149,13 @@ component
         }
 
         settingsArray = positions.map((queryPos) => {
-             isFirstGroup = queryPos <= GROUP_SPLIT + 1;
-             isLastRow = queryPos == LAST_ROW_INDEX;
-             temp_setting_id = isFirstGroup ? queryPos : queryPos + EXTRA_ID_OFFSET;
+            isFirstGroup = queryPos <= GROUP_SPLIT + 1;
+            isLastRow = queryPos == LAST_ROW_INDEX;
+            temp_setting_id = isFirstGroup ? queryPos : queryPos + EXTRA_ID_OFFSET;
 
-             temp_pos_1 = isFirstGroup
-                ? queryPos
-                : (isLastRow ? LAST_APP_NAME_IDX : queryPos - GROUP_SPLIT);
+            temp_pos_1 = isFirstGroup
+             ? queryPos
+             : (isLastRow ? LAST_APP_NAME_IDX : queryPos - GROUP_SPLIT);
 
             temp_pos_2 = (isFirstGroup || isLastRow) ? FIRST_GROUP_IDX : SECOND_GROUP_IDX;
 
@@ -277,106 +177,187 @@ component
             'Integer,VarChar,VarChar,VarChar,VarChar,VarChar,VarChar,VarChar,VarChar'
         );
         queryAddRow(result, NUM_ROWS);
-        writeDump(result)
-        
+
         settingsArray.each((setting, idx) => {
-            var rowNum = idx ;
-            querySetCell(result, "setting_id", setting.setting_id, rowNum);
-            querySetCell(result, "app_name", setting.app_name, rowNum);
-            querySetCell(result, "app_type", setting.app_type, rowNum);
-            querySetCell(result, "account_id", setting.account_id, rowNum);
-            querySetCell(result, "site_id", setting.site_id, rowNum);
-            querySetCell(result, "app_id", setting.app_id, rowNum);
-            querySetCell(result, "description", setting.description, rowNum);
-            querySetCell(result, "token_str", setting.token_str, rowNum);
-            querySetCell(result, "processing_url", setting.processing_url, rowNum);
+            var rowNum = idx;
+            querySetCell(
+                result,
+                'setting_id',
+                setting.setting_id,
+                rowNum
+            );
+            querySetCell(
+                result,
+                'app_name',
+                setting.app_name,
+                rowNum
+            );
+            querySetCell(
+                result,
+                'app_type',
+                setting.app_type,
+                rowNum
+            );
+            querySetCell(
+                result,
+                'account_id',
+                setting.account_id,
+                rowNum
+            );
+            querySetCell(
+                result,
+                'site_id',
+                setting.site_id,
+                rowNum
+            );
+            querySetCell(
+                result,
+                'app_id',
+                setting.app_id,
+                rowNum
+            );
+            querySetCell(
+                result,
+                'description',
+                setting.description,
+                rowNum
+            );
+            querySetCell(
+                result,
+                'token_str',
+                setting.token_str,
+                rowNum
+            );
+            querySetCell(
+                result,
+                'processing_url',
+                setting.processing_url,
+                rowNum
+            );
         });
         return result;
     }
 
+    private query function getCCTypesFromMysqlDB() {
+        var result = queryNew(
+            'cctype_id,card_type_id,Type,card_type,NumLength,CvvLength,FirstDigit,Comments,cc_code,cc_code_4DB,cc_vax_code',
+            'Integer,Integer,VarChar,VarChar,Integer,Integer,Integer,VarChar,VarChar,VarChar,VarChar'
+        );
+        queryAddRow(result, 4);
+
+        querySetCell(result, 'cctype_id', 1, 1);
+        querySetCell(result, 'card_type_id', 1, 1);
+        querySetCell(result, 'Type', 'MASTERCARD', 1);
+        querySetCell(result, 'card_type', 'MASTERCARD', 1);
+        querySetCell(result, 'NumLength', 16, 1);
+        querySetCell(result, 'CvvLength', 3, 1);
+        querySetCell(result, 'FirstDigit', 5, 1);
+        querySetCell(
+            result,
+            'Comments',
+            '1 800-633-7367',
+            1
+        );
+        querySetCell(result, 'cc_code', 'MC', 1);
+        querySetCell(result, 'cc_code_4DB', 'MC', 1);
+        querySetCell(result, 'cc_vax_code', 'CC MC', 1);
+
+        querySetCell(result, 'cctype_id', 2, 2);
+        querySetCell(result, 'card_type_id', 2, 2);
+        querySetCell(result, 'Type', 'VISA', 2);
+        querySetCell(result, 'card_type', 'VISA', 2);
+        querySetCell(result, 'NumLength', 16, 2);
+        querySetCell(result, 'CvvLength', 3, 2);
+        querySetCell(result, 'FirstDigit', 4, 2);
+        querySetCell(
+            result,
+            'Comments',
+            '1 800-945-2000',
+            2
+        );
+        querySetCell(result, 'cc_code', 'VS', 2);
+        querySetCell(result, 'cc_code_4DB', 'VS', 2);
+        querySetCell(result, 'cc_vax_code', 'CC VI', 2);
+
+        querySetCell(result, 'cctype_id', 3, 3);
+        querySetCell(result, 'card_type_id', 3, 3);
+        querySetCell(result, 'Type', 'AMERICAN EXPRESS', 3);
+        querySetCell(
+            result,
+            'card_type',
+            'AMERICAN EXPRESS',
+            3
+        );
+        querySetCell(result, 'NumLength', 15, 3);
+        querySetCell(result, 'CvvLength', 4, 3);
+        querySetCell(result, 'FirstDigit', 3, 3);
+        querySetCell(
+            result,
+            'Comments',
+            '1 800-639-1202',
+            3
+        );
+        querySetCell(result, 'cc_code', 'AX', 3);
+        querySetCell(result, 'cc_code_4DB', 'AX', 3);
+        querySetCell(result, 'cc_vax_code', 'CC AX', 3);
+
+        querySetCell(result, 'cctype_id', 4, 4);
+        querySetCell(result, 'card_type_id', 4, 4);
+        querySetCell(result, 'Type', 'DISCOVER', 4);
+        querySetCell(result, 'card_type', 'DISCOVER', 4);
+        querySetCell(result, 'NumLength', 16, 4);
+        querySetCell(result, 'CvvLength', 3, 4);
+        querySetCell(result, 'FirstDigit', 6, 4);
+        querySetCell(
+            result,
+            'Comments',
+            '1 800-347-2683',
+            4
+        );
+        querySetCell(result, 'cc_code', 'NS', 4);
+        querySetCell(result, 'cc_code_4DB', 'NS', 4);
+        querySetCell(result, 'cc_vax_code', 'CC DI', 4);
+
+        return result;
+    }
 
 
+    private string function serializeObject4Log(required any obj) {
+        var res = '';
+        res = replace(
+            serializeJSON(arguments.obj, true),
+            'null',
+            '""',
+            'all'
+        );
+        res = replace(res, ':[', ':''[', 'all');
+        res = reReplace(res, '\\](,|})', ']''\\1', 'all');
+        res = reReplace(
+            res,
+            '"([^"]*)":"*([^"\\[]*)"*(,|})',
+            '\\1=''\\2''\\3',
+            'all'
+        );
+        res = replace(res, '{"', '{', 'all');
+        res = replace(res, '":', '=', 'all');
+        res = reReplace(res, '([^"]),"', '\\1,', 'all');
+        res = replace(res, '"', '''', 'all');
+        return res;
+    }
 
-private query function getCCTypesFromMysqlDB() {
-    var result = queryNew(
-        "cctype_id,card_type_id,Type,card_type,NumLength,CvvLength,FirstDigit,Comments,cc_code,cc_code_4DB,cc_vax_code",
-        "Integer,Integer,VarChar,VarChar,Integer,Integer,Integer,VarChar,VarChar,VarChar,VarChar"
-    );
-    queryAddRow(result, 4);
-
-    querySetCell(result, "cctype_id", 1, 1);
-    querySetCell(result, "card_type_id", 1, 1);
-    querySetCell(result, "Type", "MASTERCARD", 1);
-    querySetCell(result, "card_type", "MASTERCARD", 1);
-    querySetCell(result, "NumLength", 16, 1);
-    querySetCell(result, "CvvLength", 3, 1);
-    querySetCell(result, "FirstDigit", 5, 1);
-    querySetCell(result, "Comments", "1 800-633-7367", 1);
-    querySetCell(result, "cc_code", "MC", 1);
-    querySetCell(result, "cc_code_4DB", "MC", 1);
-    querySetCell(result, "cc_vax_code", "CC MC", 1);
-
-    querySetCell(result, "cctype_id", 2, 2);
-    querySetCell(result, "card_type_id", 2, 2);
-    querySetCell(result, "Type", "VISA", 2);
-    querySetCell(result, "card_type", "VISA", 2);
-    querySetCell(result, "NumLength", 16, 2);
-    querySetCell(result, "CvvLength", 3, 2);
-    querySetCell(result, "FirstDigit", 4, 2);
-    querySetCell(result, "Comments", "1 800-945-2000", 2);
-    querySetCell(result, "cc_code", "VS", 2);
-    querySetCell(result, "cc_code_4DB", "VS", 2);
-    querySetCell(result, "cc_vax_code", "CC VI", 2);
-
-    querySetCell(result, "cctype_id", 3, 3);
-    querySetCell(result, "card_type_id", 3, 3);
-    querySetCell(result, "Type", "AMERICAN EXPRESS", 3);
-    querySetCell(result, "card_type", "AMERICAN EXPRESS", 3);
-    querySetCell(result, "NumLength", 15, 3);
-    querySetCell(result, "CvvLength", 4, 3);
-    querySetCell(result, "FirstDigit", 3, 3);
-    querySetCell(result, "Comments", "1 800-639-1202", 3);
-    querySetCell(result, "cc_code", "AX", 3);
-    querySetCell(result, "cc_code_4DB", "AX", 3);
-    querySetCell(result, "cc_vax_code", "CC AX", 3);
-
-    querySetCell(result, "cctype_id", 4, 4);
-    querySetCell(result, "card_type_id", 4, 4);
-    querySetCell(result, "Type", "DISCOVER", 4);
-    querySetCell(result, "card_type", "DISCOVER", 4);
-    querySetCell(result, "NumLength", 16, 4);
-    querySetCell(result, "CvvLength", 3, 4);
-    querySetCell(result, "FirstDigit", 6, 4);
-    querySetCell(result, "Comments", "1 800-347-2683", 4);
-    querySetCell(result, "cc_code", "NS", 4);
-    querySetCell(result, "cc_code_4DB", "NS", 4);
-    querySetCell(result, "cc_vax_code", "CC DI", 4);
-
-    return result;
-}
-
-
-private string function serializeObject4Log(required any obj) {
-    var res = '';
-    res = replace(
-        serializeJSON(arguments.obj, true),
-        'null',
-        '""',
-        'all'
-    );
-    res = replace(res, ':[', ':''[', 'all');
-    res = reReplace(res, '\\](,|})', ']''\\1', 'all');
-    res = reReplace(
-        res,
-        '"([^"]*)":"*([^"\\[]*)"*(,|})',
-        '\\1=''\\2''\\3',
-        'all'
-    );
-    res = replace(res, '{"', '{', 'all');
-    res = replace(res, '":', '=', 'all');
-    res = reReplace(res, '([^"]),"', '\\1,', 'all');
-    res = replace(res, '"', '''', 'all');
-    return res;
-}
+    private void function logInfoError(required string p_type, required string p_logtype, required string p_text) {
+        var v_text_string = right(arguments.p_text, 2995);
+        if (arguments.p_type == 'email') {
+            mail
+                from="info@sandals.com"
+                to="irvin.reyes@sanservices.hn"
+                type="html"
+                subject="Shift4 notification: Application '#variables.current_appname#'" {
+                writeOutput(arguments.p_text);
+            }
+            return;
+        }
+        writeLog(type = 'Warning', file = 'Shift4_Err_Warning', text = v_text_string);
+    }
 
 }

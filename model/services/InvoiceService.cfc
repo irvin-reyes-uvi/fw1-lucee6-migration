@@ -3,9 +3,8 @@ component accessors="true"{
 
     public numeric function getNewInvoiceId() {
         var qResult = getPaymentDataProvider().getNewInvoiceId();
-
-        if (isNull(qResult) || qResult <= 0) {
-            throw(new model.payments.exceptions.PaymentNotFoundException());
+        if (!isQuery(qResult)) {
+            throw(type="Application", message="Failed to retrieve new invoice ID from PaymentDataProvider.");
         }
         return qResult;
     }

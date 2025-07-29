@@ -10,13 +10,7 @@ component extends="framework.one" {
         '/framework': expandPath('./framework')
     };
 
-    this.customtagpaths = [
-        expandPath('/views/includes/custom_tags')
-        //expandPath('/views/includes/custom_tags/sandals'),
-        //expandPath('/views/includes/custom_tags/beaches'),
-        //expandPath('/views/includes/custom_tags/general')
-    ];
-    //from
+  
     variables.framework = {
         usingSubsystems: false,
         action: 'go',
@@ -93,6 +87,14 @@ component extends="framework.one" {
             location(url = buildURL('main.default'), addToken = false);
         }
 
+        this.cache.connections["dat"] = {
+            class: 'lucee.runtime.cache.ram.RamCache'
+            , storage: true
+            , custom: {
+                "timeToIdleSeconds":0,"timeToLiveSeconds":3600}
+            , default: 'object'
+        };
+
         application.isGoldDown = false;
         if (application.isGoldDown) {
             include './views/error/default.cfm';
@@ -102,8 +104,6 @@ component extends="framework.one" {
 
     public void function setupRequest() {
     }
-
-
 
     public string function setupResponse() {
         super.onRequestEnd();
