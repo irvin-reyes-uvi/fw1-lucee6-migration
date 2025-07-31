@@ -38,6 +38,8 @@ component extends="framework.one" {
         var findDev = findNoCase('dev', CGI.SERVER_NAME);
         var find127 = findNoCase('127', CGI.SERVER_NAME);
 
+        //application.emailsNotifications = server.system.
+        application.emailsNotifications = 'weddinggroups@uvltd.com,socialgroups@uvltd.com,incentivegroups@uvltd.com,anneth.zavala@sanservices.hn';
 
         application.isDev = findLocal || findTst || findTest || findDev || find127;
         application.env = application.isDev ? 'dev' : 'prod';

@@ -18,9 +18,9 @@ component singleton accessors="true" {
 
     public query function getCountries() {
         return getCacheService().getOrSet(
-            key: 'webservice.countries',
+            key: 'data.countries',
             callback: () => getPaymentService().getCountries(),
-            ttl: createTimespan(0, 6, 0, 0)
+            ttl: createTimespan(0, 1, 0, 0)
         );
     }
 

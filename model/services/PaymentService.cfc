@@ -1,56 +1,65 @@
 component accessors="true" {
 
-    wsdlMap = {
-        'dev': {
-            wsdlPayment: 'http://tieradevremote.sandals.com/options/payment.cfc?wsdl',
-            wsdlGeneral: 'http://tieradevremote.sandals.com/sandals_accounts/general.cfc?wsdl'
-        },
-        'prod': {
-            wsdlPayment: 'http://remote.sandals.com/options/payment.cfc?wsdl',
-            wsdlGeneral: 'http://remote.sandals.com/sandals_accounts/general.cfc?wsdl'
-        }
-    };
+    property BookingDataProvider;
 
-    envKey = application.isDev ? 'dev' : 'prod';
-    variables.wsdlPayment = wsdlMap[envKey].wsdlPayment;
-    variables.wsdlGeneral = wsdlMap[envKey].wsdlGeneral;
-
-
-    function makeWebService(endpoint) {
-        return createObject('webservice', endpoint);
+    public query function getCountries() {
+        var rtnStruct = getBookingDataProvider().getCountries().results;
+        return rtnStruct;
     }
 
-    function getGeneralWebService() {
-        return makeWebService(variables.wsdlGeneral);
-    }
-
-    function getPaymentWebService() {
-        return makeWebService(variables.wsdlPayment);
-    }
-
-    function getCountries() {
-        var wsGeneral = getGeneralWebService();
-        return wsGeneral.getCountries().results;
-    }
-
-    function verifyBookingFromWebService(email, bookingNumber) {
-        var paymentService = getPaymentWebService();
-        return paymentService.fncVerifyBooking(Email = email, BookingNumber = bookingNumber);
-    }
-
-    function checkGroupBookingFromWebService(
-        bookingNumber,
-        groupName,
-        checkInDate,
-        resortCode
-    ) {
-        paymentWsdlService = getPaymentWebService();
-        return paymentWsdlService.fncCheckGroupBooking(
-            BookingNumber = bookingNumber,
-            GroupName = groupName,
-            CheckInDate = checkInDate,
-            ResortCode = resortCode
+    public struct function verifyBooking(required string Email, required numeric BookingNumber) {
+        var structResults = getBookingDataProvider().VerifyBooking(
+            Email = arguments.Email,
+            BookingNumber = arguments.BookingNumber
         );
+        return structResults;
     }
+
+    public function validateCreditCardType(ccnumber = '', cctype = '', cccvv = '') {
+        var output = {cctype: arguments.cctype, message: '', success: false};
+
+        var isValidLength = len(ccnumber) == {2: 16, 1: 16, 3: 15, 4: 16}[arguments.cctype] ?: false;
+
+        var isValidCvvLength = len(cccvv) == {2: 3, 1: 3, 3: 4, 4: 3}[arguments.cctype] ?: false;
+
+        var isValidPrefix = {
+            2: left(ccnumber, 1) == 4,
+            1: left(ccnumber, 1) == 5 || left(ccnumber, 1) == 2,
+            3: left(ccnumber, 1) == 3,
+            4: left(ccnumber, 1) == 6
+        }[arguments.cctype] ?: false;
+
+        var isValid = isValidLength && isValidCvvLength && isValidPrefix;
+
+        if (!isValid) {
+            output.message = {
+                2: 'Please use a valid VISA credit card',
+                1: 'Please use a valid MASTER CARD credit card',
+                3: 'Please use a valid AMEX credit card',
+                4: 'Please use a valid credit card'
+            }[arguments.cctype] ?: 'Please use a valid credit card';
+            return output;
+        }
+
+        output.success = true;
+        return output;
+    }
+
+
+    public struct function checkGroupBooking(
+        required string BookingNumber,
+        required string GroupName,
+        required date CheckInDate,
+        required string ResortCode
+    ) {
+        var ThisReturn = getBookingDataProvider().CheckGroupBooking(
+            BookingNumber = arguments.BookingNumber,
+            GroupName = arguments.GroupName,
+            CheckInDate = arguments.CheckInDate,
+            ResortCode = arguments.ResortCode
+        );
+        return ThisReturn;
+    }
+
 
 }

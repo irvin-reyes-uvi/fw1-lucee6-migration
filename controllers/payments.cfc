@@ -7,7 +7,7 @@ component accessors="true" {
     property PostCCTransactionService;
     property EmailService;
     property CachedDataService;
-    variables.emailsNotifications = 'weddinggroups@uvltd.com,socialgroups@uvltd.com,incentivegroups@uvltd.com,anneth.zavala@sanservices.hn';
+    variables.emailsNotifications = application.emailsNotifications;
 
     public any function init(fw) {
         variables.fw = fw;
@@ -69,8 +69,6 @@ component accessors="true" {
             rc.DAYPART = dateFormat(now(), 'DDMMYY')
             rc.INVOICE = rc.DAYPART & rc.NewInvoiceID
 
-
-
             writeLog(
                 type = 'information',
                 file = 'OnlinePaymentLog',
@@ -88,7 +86,6 @@ component accessors="true" {
 
         rc.qryAssignment = getBookingService().getBookingDetails(rc.SandalsBookingNumber);
         rc.isBookingNumberNotDefined = not isDefined('rc.SandalsBookingNumber');
-
 
         rc.isBookingDetailsEmpty = (rc.qryAssignment.book_no IS '0') OR (rc.qryAssignment.resv_no IS '0');
 
@@ -165,7 +162,6 @@ component accessors="true" {
 
             rc.PaymentResultsStructObj = rc.authorizationData;
             rc.structCCResponse = rc.PaymentResultsStructObj.result;
-
             rc.structCardInfo.BookingNumber = '#form.sandalsbookingnumber#'
             rc.structCardInfo.Email = '#form.email#'
             rc.structCardInfo.Amount = form.paymentAmount
@@ -207,14 +203,11 @@ component accessors="true" {
                 )
             }
 
-
             writeLog(
                 type = 'information',
                 file = 'OnlinePaymentLogByTest',
                 text = 'booking=''#form.sandalsbookingnumber#''  Info=''CCsystemV2, rc.PaymentResultsStructObj.result.error--#hasErrorFlag#,OK''  amount=''#form.paymentamount#'''
             )
-
-
 
             isTransactionApproved = rc.structCCResponse.transaction.approved;
             if (isTransactionApproved) {
@@ -383,8 +376,6 @@ component accessors="true" {
         rc.ConfirmPayment = rc.ConfirmPayment ?: '';
 
         rc.Resorts = getCachedDataService().getAllResorts();
-
-
         error_test_handler = new model.utils.ErrorNTestHandler().initurl(url);
         obj_shift4Factory = new model.utils.Shift4Factory();
 
@@ -396,7 +387,7 @@ component accessors="true" {
         rc.structBookingInfo = {};
         var ErrorMessage = '';
         hasFormBooking = structKeyExists(form, 'BookingNumber');
-        paymentService = getPaymentService().getPaymentWebService();
+        paymentService = getPaymentService();
         if (hasFormBooking) {
             hasWTheBookingNumber = left(form.BookingNumber, 1) == 'W';
             if (hasWTheBookingNumber) {
@@ -411,17 +402,16 @@ component accessors="true" {
                 ErrorMessage = 'Confirmation number is not valid';
             }
 
-
             isNotEmailRemainder = compareNoCase(PaymentReason, 'EmailReminder') == 0;
             if (isNotEmailRemainder) {
-                rc.structBookingInfo = paymentService.fncVerifyBooking(
+                rc.structBookingInfo = paymentService.verifyBooking(
                     Email = form.Email,
                     BookingNumber = form.BookingNumber
                 );
                 return;
             }
 
-            rc.structBookingInfo = paymentService.fncCheckGroupBooking(
+            rc.structBookingInfo = paymentService.checkGroupBooking(
                 BookingNumber = form.BookingNumber,
                 GroupName = form.GroupName,
                 CheckInDate = form.CheckinDt,
@@ -429,12 +419,12 @@ component accessors="true" {
             );
         }
 
-
-        var isValidCCType = validateCreditCardType(
+        var isValidCCType = paymentService.validateCreditCardType(
             ccnumber = form.creditcard,
             cctype = form.cardtype,
             cccvv = form.cvv2code
         );
+
         rc.ContinueDisplay = true;
         var Message = 'Please correct the following error(s) by selecting <strong>Edit</strong>.<br>';
 
@@ -490,43 +480,12 @@ component accessors="true" {
         };
     }
 
-    private function validateCreditCardType(ccnumber = '', cctype = '', cccvv = '') {
-        var output = {cctype: arguments.cctype, message: '', success: false};
-
-        var isValidLength = len(ccnumber) == {2: 16, 1: 16, 3: 15, 4: 16}[arguments.cctype] ?: false;
-
-        var isValidCvvLength = len(cccvv) == {2: 3, 1: 3, 3: 4, 4: 3}[arguments.cctype] ?: false;
-
-        var isValidPrefix = {
-            2: left(ccnumber, 1) == 4,
-            1: left(ccnumber, 1) == 5 || left(ccnumber, 1) == 2,
-            3: left(ccnumber, 1) == 3,
-            4: left(ccnumber, 1) == 6
-        }[arguments.cctype] ?: false;
-
-        var isValid = isValidLength && isValidCvvLength && isValidPrefix;
-
-        if (!isValid) {
-            output.message = {
-                2: 'Please use a valid VISA credit card',
-                1: 'Please use a valid MASTER CARD credit card',
-                3: 'Please use a valid AMEX credit card',
-                4: 'Please use a valid credit card'
-            }[arguments.cctype] ?: 'Please use a valid credit card';
-            return output;
-        }
-
-        output.success = true;
-        return output;
-    }
-
     function test(rc) {
         rc.title = 'Test Page';
         rc.message = 'This is a test page.';
 
         // rc.paymentService = getPaymentService().getPaymentWebService();
         // rc.generalWebService = getPaymentService().getGeneralWebService();
-
 
         rc.cachedService = getCachedDataService();
         rc.result = rc.cachedService.getCountries();

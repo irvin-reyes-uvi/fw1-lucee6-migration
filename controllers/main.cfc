@@ -80,35 +80,19 @@ component accessors="true" {
         Resorts = getCachedDataService().getAllResorts();
         rc.Resorts = Resorts;
         rc.qryCountries = getCachedDataService().getCountries();
+
         if (len(rc.ErrorMessage)) {
             rc.Resorts = Resorts;
             return;
         }
 
         var structBookingInfo = {};
-        /*hasWInIt = left(rc.BookingNumber, 1) == 'W';
-        if (hasWInIt) {
-
-
-            var verifiedBooking = BookingsService.verifyBookingByConfirmation(rc.BookingNumber);
-
-            if (verifiedBooking) {
-                rc.BookingNumber = verifiedBooking;
-            } else {
-                rc.ErrorMessage = 'Confirmation number is not valid.';
-                rc.Resorts = Resorts;
-                // variables.fw.renderView(view = 'main/default');
-                return;
-            }
-
-
-        }*/
 
         isNotEmailRemainder = compareNoCase(rc.PaymentReason, 'EmailReminder') == 0;
         if (isNotEmailRemainder) {
-            structBookingInfo = getPaymentService().verifyBookingFromWebService(rc.Email, rc.BookingNumber);
+            structBookingInfo = getPaymentService().verifyBooking(rc.Email, rc.BookingNumber);
         } else {
-            structBookingInfo = getPaymentService().checkGroupBookingFromWebService(
+            structBookingInfo = getPaymentService().checkGroupBooking(
                 rc.BookingNumber,
                 rc.GroupName,
                 rc.CheckInDt,
