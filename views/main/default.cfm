@@ -67,7 +67,7 @@
                         Find Your Booking Information:
                     </div>
                     <div class="indent headerMessageTop">
-                        <strong>Note</strong>: This Group Online Payment form can only be used for
+                    <strong>Note</strong>: This Group Online Payment form can only be used for
                         bookings made online <br>
                         on Sandals.com, Beaches.com or bookings which were
                         made by calling Unique Vacations Inc. If you made

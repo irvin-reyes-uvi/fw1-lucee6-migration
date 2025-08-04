@@ -11,9 +11,9 @@
     >
     <div class="navOuter">
         <ul class="navInner">
-            <li>
+            <!---<li>
                 <a <cfif page_type eq 'payment'> class="leftmenuitemon"</cfif> href="/payment.cfm">Online Payment</a>
-            </li>
+            </li>--->
         </ul>
     </div>
 </cfoutput>

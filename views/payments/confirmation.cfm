@@ -79,8 +79,6 @@ v_new_shift4_error_message = '';
                                 </tr>
                             </table>
 
-                            <!--- =======================obtain new invoice number============================ --->
-
                             <cfset structCardInfo = rc.structCardInfo>
 
                             <br>

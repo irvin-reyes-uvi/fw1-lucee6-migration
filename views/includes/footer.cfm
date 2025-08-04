@@ -122,12 +122,10 @@
             <cfswitch expression="#phoneNumToShow#">
                 <!--- US --->
                 <cfcase value="US">
-                    <div align="center">
-
-                        <p>GROUPS DIRECT LINE</p>
-                        <p>1-800-327-1991</p>
-                        <p>EXT 2793 * FROM 7 AM to 12 AM EST</p>
-                        
+                    <div class="contact-block">
+                        <p class="title-line">GROUPS DIRECT LINE</p>
+                        <p class="main-phone-number">1-800-327-1991</p>
+                        <p class="details-line">EXT 2793</p>
                     </div>
                 </cfcase>
                 
