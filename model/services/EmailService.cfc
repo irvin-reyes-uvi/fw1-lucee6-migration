@@ -37,9 +37,9 @@
                     >
                         <h1 style="font-size: 24px; margin-bottom: 20px; text-decoration: underline;">Payment Confirmation</h1>
                         <p style="font-size: 16px;">
-                            <strong>Your card was charged #dollarFormat(arguments.form.paymentamount)# and applied to your Reservation number #arguments.form.sandalsbookingnumber#.</strong><br>
-                            Thank you for your business. Please allow 24-48 hours for your payment to be reflected on your account.<br>
-                            #extraMessage#
+                            <strong>Your card was charged #dollarformat(form.paymentamount)# and applied to your Reservation number ###form.sandalsbookingnumber#.</strong><br>
+							Thank you for your business and please allow 24 - 48 hours for your payment to be reflected on your group.<br>
+							#ExtraMessage#
                         </p>
                     </div>
                 </cfmail>
@@ -70,7 +70,7 @@
                 <cfmail
                     from="info@sandals.com"
                     subject="Illegal Email Error in Online Payment"
-                    to="marcelo.martinez@uvltd.tech"
+                    to="irvin.reyes@sanservices.hn"
                     type="html"
                 >
                     LocalHostName: <cfoutput>#arguments.localHostName#</cfoutput>

@@ -66,7 +66,7 @@ qryCountries = rc.qryCountries;
                                             </cfif>
                                         <cfelse>
                                             <cfif structBookingInfo.BookingInfo.CancelNo GT 0>
-                                                Your reservation has already been cancelled.<br>
+                                                We are unable to process your payment at this time. Please contact the Unique Travel Corp’s Groups Department at (800) 327-1991 ext. 2793 for further assistance.<br>
                                                 <cfset varCheck = 1>
                                             </cfif>
                                         </cfif>
@@ -80,7 +80,7 @@ qryCountries = rc.qryCountries;
                                 <cfif !verified>
                                     <p>Your reservation was not found in our system. Please call 800-327-1991 ext.6172 for assistance. </p>
                                     <div id="highlightsection" class="indent">
-                                        <p>Click <a href="#CGI.SCRIPT_NAME#">Here</a> to try again. </p>
+                                        <p>Click <a href="#buildURL(action = 'main.default')#">Here</a> to try again. </p>
                                     </div>
                                     <cfset Client.FailedBookFindTries = IncrementValue(Client.FailedBookFindTries)>
                                     <cfset Client.FailedBookFindDt = DateFormat(NOW(),"MM/DD/YYYY")>

@@ -5,7 +5,7 @@
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
             <meta name="description" content="">
-            <meta name="author" content="Unique Vacations">
+            <meta name="author" content="Unique Vacations Inc.">
             <title>Group Online Payments</title>
         </head>
         <body>
@@ -22,16 +22,19 @@
                 <tr>
                     <td width="250" valign="top" id="leftcolumn">
                         <cfset page_type = 'payment'>
-
                         #view('includes/leftmenu')#
                     </td>
 
                     <td valign="top" align="center">
+                        <div id="loader-overlay">
+                            <div class="loader"></div>
+                        </div>
                         #body#
                     </td>
+                      
                 </tr>
             </table>
-
+             
             #view('includes/footer')#
         </body>
     </html>

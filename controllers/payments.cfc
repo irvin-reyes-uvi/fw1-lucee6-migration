@@ -326,7 +326,11 @@ component accessors="true" {
         } catch (any e) {
             rc.errorMessage = 'An error occurred while processing the transaction: ' & e.message;
             EmailService.sendTransactionErrorEmail(form, host, e);
-
+              AuthorizationCode = rc.structCCResponse.transaction.authCode ?: '';
+                v_new_token_string = '#rc.structCCResponse.transaction.token#'
+                v_new_response_code = '#rc.structCCResponse.transaction.responseCode#'
+                v_cc_transaction_id = '#rc.structCCResponse.transaction.orderNumber#'
+                v_processor = '#rc.structCCResponse.transaction.gateway#';
             writeLog(
                 type = 'information',
                 file = 'OnlinePaymentErr',

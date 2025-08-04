@@ -307,7 +307,7 @@
         <script type="text/javascript" defer src="<cfoutput>#scriptsDir#</cfoutput>/countryState.js" nonce="#application.nonce#"></script>
         <script  defer src="<cfoutput>#scriptsDir#</cfoutput>/makePaymentButtons.js" type="text/javascript" nonce="#application.nonce#"></script>
         <script  defer src="<cfoutput>#scriptsDir#</cfoutput>/paymentsCFM.js" type="text/javascript" nonce="#application.nonce#"></script>
-
+        <script  defer src="<cfoutput>#scriptsDir#</cfoutput>/loaderProcessor.js" type="text/javascript" nonce="#application.nonce#"></script>
     
 </body>
 </html>

@@ -108,11 +108,12 @@ v_new_shift4_error_message = '';
                             <cfelse>
 
                                 <cfif trim(encodeForHTML(Form.Email)) IS NOT ''>
-                                    <cfset Client.PaymentSuccessMessage = '<p>Your card was approved.  Payment has been made and a confirmation email has been sent to your email address.</p>  <p>Please allow 24-48 hours for your payment to be reflected on your account.</p>  <p>Thank you.</p>
-																															<p><a href = ''http://www.sandals.com''>click here</a> to go to the Sandals website.</p>'>
+                                    <cfset Client.PaymentSuccessMessage = "<p>Your card was charged #dollarformat(form.paymentamount)# and applied to your Reservation number  ###form.sandalsbookingnumber#.</p>
+											<p>Thank you for your business and please allow 24 - 48 hours for your payment to be reflected on your group. </p> 
+											<p>If you have any questions or would like to speak to a Unique Travel Corp's Group Representative, please call (800) 327-1991 ext. 2793. </p> ">
                                 <cfelse>
-                                    <cfset Client.PaymentSuccessMessage = '<p>Your card was approved and your payment has been made.  Please allow 24-48 hours for your payment to be reflected on your account.</p>  <p>Thank you.</p>
-											<p><a href = ''http://www.sandals.com''>click here</a> to go to the Sandals website.</p>'>
+                                    <cfset Client.PaymentSuccessMessage = "Your card was approved and your payment form has been made.  Thank you for your business and please allow 24 – 48 hours for your payment to be reflected on your group.</p>  <p>Thank you.</p>
+											<p><a href = 'http://www.sandals.com'>click here</a> to go to the Sandals website.</p>">
                                 </cfif>
 
                                 <cflocation url="#buildUrl("payments.confirmation")#" addtoken="no">
