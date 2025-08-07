@@ -1,8 +1,6 @@
 component accessors="true" {
 
     property PaymentService;
-    property ErrorNTestHandler;
-    property EteService;
     property ResortQueryService;
     property CachedDataService;
 
@@ -30,12 +28,16 @@ component accessors="true" {
 
         rc.Resorts = getCachedDataService().getAllResorts();
         rc.qryCountries = getCachedDataService().getCountries();
-        hasExceedTriesNumber = client.FailedBookFindTries > 3 && dateCompare(
-            dateFormat(now(), 'MM/DD/YYYY'),
-            client.FailedBookFindDt
-        ) == 0;
 
-        if (hasExceedTriesNumber) {
+        if(!isDefined('client.FailedBookFindTries')){
+            client.FailedBookFindTries =  0;
+            client.FailedBookFindDt =  '';
+            client.FailedPaymentTries = 0;
+            client.FailedPaymentDt =  '';
+            client.PaymentSuccessMessage =  '';
+        } 
+
+        if (client.FailedBookFindTries > 3 && dateCompare(dateFormat(now(), 'MM/DD/YYYY'), client.FailedBookFindDt) == 0) {
             rc.ErrorMessage = 'Sorry, but you have exceeded the number of tries to find your booking, you must wait 24 hours to try again.';
             return;
         }
@@ -88,8 +90,7 @@ component accessors="true" {
 
         var structBookingInfo = {};
 
-        isNotEmailRemainder = compareNoCase(rc.PaymentReason, 'EmailReminder') == 0;
-        if (isNotEmailRemainder) {
+        if (compareNoCase(rc.PaymentReason, 'EmailReminder') == 0) {
             structBookingInfo = getPaymentService().verifyBooking(rc.Email, rc.BookingNumber);
         } else {
             structBookingInfo = getPaymentService().checkGroupBooking(
@@ -102,8 +103,7 @@ component accessors="true" {
 
         rc.structBookingInfo = structBookingInfo;
 
-        isVerified = rc.structBookingInfo.status == 'True';
-        if (isVerified) {
+        if (rc.structBookingInfo.status == 'True') {
             session.OPPaymentInfo = {
                 BookingNumber: rc.BookingNumber,
                 Email: rc.Email,

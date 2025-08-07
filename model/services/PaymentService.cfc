@@ -1,6 +1,7 @@
 component accessors="true" {
 
     property BookingDataProvider;
+    property Shift4Factory;
 
     public query function getCountries() {
         var rtnStruct = getBookingDataProvider().getCountries().results;
@@ -13,6 +14,21 @@ component accessors="true" {
             BookingNumber = arguments.BookingNumber
         );
         return structResults;
+    }
+
+    public query function getCCTypes() {
+        ccTypes = getShift4Factory().getCCTypes();
+        return ccTypes;
+    }
+
+    public string function getCCCodeById(required numeric p_typeid, required query p_qryCCtypes) {
+        ccTypeId = getShift4Factory().getCCCodeById(p_typeid, p_qryCCtypes);
+        return ccTypeId;
+    }
+
+    public string function getCCCode4DBById(required numeric p_typeid, required query p_qryCCtypes) {
+        ccTypeId = getShift4Factory().getCCCode4DBById(p_typeid, p_qryCCtypes);
+        return ccTypeId;
     }
 
     public function validateCreditCardType(ccnumber = '', cctype = '', cccvv = '') {

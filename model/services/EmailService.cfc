@@ -13,7 +13,7 @@
             <cfset var sendToEmail = arguments.form.email>
             <cfset var fromEmail = 'info@sandals.com'>
             <cfset var replyToEmail = 'info@sandals.com'>
-            <cfset var extraMessage = 'If you have any questions or would like to speak to a Sandals & Beaches agent please call us at 1-888-SANDALS.'>
+            <cfset var extraMessage = "If you have any questions or would like to speak to a Unique Travel Corp's Group Representative, please call (800) 327-1991 ext. 2793.">
             <cfset var bccfield = 'irvin.reyes@sanservices.hn'>
 
             <cflog
@@ -91,7 +91,7 @@
         <cfargument name="localHostName" type="string" required="true" hint="The local host name for error reporting">
         <cfargument name="cfcatch" type="any" required="true" hint="The cfcatch object from the try/catch block">
 
-        <cfmail from="info@sandals.com" subject="error1 in online payment" to="fabouradi@uvi.sandals.com" type="html">
+        <cfmail from="info@sandals.com" subject="error1 in online payment" to="irvin.reyes@sanservices.hn" type="html">
             <cfoutput>
                 LocalHostName = #arguments.localHostName#<br>
             </cfoutput>

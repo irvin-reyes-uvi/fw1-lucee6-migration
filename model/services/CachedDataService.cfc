@@ -1,12 +1,11 @@
 component singleton accessors="true" {
 
     property name="cacheService";
-    property name="Shift4Factory";
     property name="PaymentService";
     property name="ResortQueryService";
 
     public query function getCCTypes() {
-        return getCacheService().getOrSet(key: 'data.getCCTypes', callback: () => getShift4Factory().getCCTypes());
+        return getCacheService().getOrSet(key: 'data.getCCTypes', callback: () => getPaymentService().getCCTypes());
     }
 
     public array function getAllResorts() {

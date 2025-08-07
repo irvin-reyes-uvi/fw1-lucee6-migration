@@ -1,15 +1,9 @@
 <cfoutput>
     <!doctype html>
     <html lang="en">
-        <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-            <meta name="description" content="">
-            <meta name="author" content="Unique Vacations Inc.">
-            <title>Group Online Payments</title>
-        </head>
+         #view('includes/header')#
         <body>
-            #view('includes/header')#
+           
 
             <table
                 width="100%"

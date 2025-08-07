@@ -15,6 +15,6 @@ variables.framework = {
     unhandledPaths: '/flex2gateway,/keepalive/,/test/',
     applicationKey: 'framework.one',
     diEngine: 'di1',
-    diLocations: '/model/services,/model/utils,/model/dao,/model/beans,/model/interfaces,/model/repositories,/controllers'
+    diLocations: '/model/services,/model/utils,/controllers'
 };
 </cfscript>

@@ -10,7 +10,6 @@ component extends="framework.one" {
         '/framework': expandPath('./framework')
     };
 
-  
     variables.framework = {
         usingSubsystems: false,
         action: 'go',
@@ -29,7 +28,6 @@ component extends="framework.one" {
         diLocations: '/model/services,/model/utils,/model/providers,/controllers'
 
     };
-
 
     public void function setupApplication() {
         var findLocal = findNoCase('local', CGI.SERVER_NAME);
@@ -84,10 +82,12 @@ component extends="framework.one" {
             request.MassmailsDS = 'MassMails';
         }
 
-        include './views/includes/tags/initEnv.cfm'
+        
         if (!structKeyExists(request, 'action') && !structKeyExists(url, 'action')) {
             location(url = buildURL('main.default'), addToken = false);
         }
+
+        include './views/includes/tags/initEnv.cfm'
 
         this.cache.connections["dat"] = {
             class: 'lucee.runtime.cache.ram.RamCache'

@@ -1,5 +1,5 @@
 <cfscript>
-client.FailedBookFindTries = 0;
+
 structBookingInfo = rc.structBookingInfo;
 Resorts = rc.Resorts;
 ThisYear = rc.ThisYear;

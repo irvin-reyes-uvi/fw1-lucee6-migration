@@ -7,15 +7,12 @@ component accessors="true" {
     property PostCCTransactionService;
     property EmailService;
     property CachedDataService;
+    property ErrorNTestHandler;
     variables.emailsNotifications = application.emailsNotifications;
 
     public any function init(fw) {
         variables.fw = fw;
         return this;
-    }
-
-    function default(rc) {
-        variables.fw.redirect(action = 'main.default', queryString = 'msg=503');
     }
 
     function error(rc) {
@@ -48,7 +45,9 @@ component accessors="true" {
         rc.PaymentType = rc.PaymentType ?: '';
         rc.comment = rc.comment ?: '';
 
-        error_test_handler = new model.utils.ErrorNTestHandler().initurl(url);
+
+        // error_test_handler = new model.utils.ErrorNTestHandler().initurl(url);
+        error_test_handler = getErrorNTestHandler();
 
         rc.isPaymentSuccessMessageNotDefined = not isDefined('Client.PaymentSuccessMessage');
         if (rc.isPaymentSuccessMessageNotDefined) {
@@ -59,10 +58,10 @@ component accessors="true" {
         try {
             rc.structCardInfo = {}
 
-            rc.isMonthNotDefined = not isDefined('session.OPPaymentInfo.month');
+            rc.isMonthNotDefined = !isDefined('session.OPPaymentInfo.month');
             if (rc.isMonthNotDefined) {
                 cfdump(var = session.OPPaymentInfo, label = "inside month validation", abort = true);
-                variables.fw.redirect(action = 'main.default', queryString = 'msg=503');
+                // variables.fw.redirect(action = 'main.default', queryString = 'msg=503');
             }
 
             rc.NewInvoiceID = getInvoiceService().getNewInvoiceId();
@@ -111,9 +110,8 @@ component accessors="true" {
         }
 
 
-        obj_shift4Factory = new model.utils.Shift4Factory();
         qry_cctypes = getCachedDataService().getCCTypes();
-        cc_type_code = obj_shift4Factory.getCCCodeById(session.OPPaymentInfo.CardType, qry_cctypes);
+        cc_type_code = getPaymentService().getCCCodeById(session.OPPaymentInfo.CardType, qry_cctypes);
 
         isCCStateNull = session.OPPaymentInfo.CCState is '';
         dState = isCCStateNull ? session.OPPaymentInfo.otherState : session.OPPaymentInfo.CCState;
@@ -232,7 +230,7 @@ component accessors="true" {
                 )
 
                 if (rc.structCardInfo.Approved) {
-                    rc.ccType = obj_shift4Factory.getCCCode4DBById(session.OPPaymentInfo.CardType, qry_cctypes);
+                    rc.ccType = getPaymentService().getCCCode4DBById(session.OPPaymentInfo.CardType, qry_cctypes);
                     writeLog(
                         type = 'information',
                         file = 'OnlinePaymentLogByTest',
@@ -326,11 +324,11 @@ component accessors="true" {
         } catch (any e) {
             rc.errorMessage = 'An error occurred while processing the transaction: ' & e.message;
             EmailService.sendTransactionErrorEmail(form, host, e);
-              AuthorizationCode = rc.structCCResponse.transaction.authCode ?: '';
-                v_new_token_string = '#rc.structCCResponse.transaction.token#'
-                v_new_response_code = '#rc.structCCResponse.transaction.responseCode#'
-                v_cc_transaction_id = '#rc.structCCResponse.transaction.orderNumber#'
-                v_processor = '#rc.structCCResponse.transaction.gateway#';
+            AuthorizationCode = rc.structCCResponse.transaction.authCode ?: '';
+            v_new_token_string = '#rc.structCCResponse.transaction.token#'
+            v_new_response_code = '#rc.structCCResponse.transaction.responseCode#'
+            v_cc_transaction_id = '#rc.structCCResponse.transaction.orderNumber#'
+            v_processor = '#rc.structCCResponse.transaction.gateway#';
             writeLog(
                 type = 'information',
                 file = 'OnlinePaymentErr',
@@ -381,7 +379,6 @@ component accessors="true" {
 
         rc.Resorts = getCachedDataService().getAllResorts();
         error_test_handler = new model.utils.ErrorNTestHandler().initurl(url);
-        obj_shift4Factory = new model.utils.Shift4Factory();
 
         rc.qry_cctypes = getCachedDataService().getCCTypes();
 
@@ -392,6 +389,9 @@ component accessors="true" {
         var ErrorMessage = '';
         hasFormBooking = structKeyExists(form, 'BookingNumber');
         paymentService = getPaymentService();
+
+        session.OPPaymentInfo = {};
+
         if (hasFormBooking) {
             hasWTheBookingNumber = left(form.BookingNumber, 1) == 'W';
             if (hasWTheBookingNumber) {
@@ -482,17 +482,12 @@ component accessors="true" {
             month: Form.Month,
             year: Form.year
         };
+
     }
 
-    function test(rc) {
-        rc.title = 'Test Page';
-        rc.message = 'This is a test page.';
-
-        // rc.paymentService = getPaymentService().getPaymentWebService();
-        // rc.generalWebService = getPaymentService().getGeneralWebService();
-
-        rc.cachedService = getCachedDataService();
-        rc.result = rc.cachedService.getCountries();
+    function default(rc) {
+        variables.fw.redirect(action = 'main.default', queryString = 'msg=503');
     }
+
 
 }
